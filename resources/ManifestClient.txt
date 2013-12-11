@@ -1,0 +1,8 @@
+Main-Class: ss.project.client.Application
+
+Name: RollitClient
+Sealed: true
+Specification-Title: "RollitClient"
+Specification-Vendor:  "ss.project.client."
+Implementation-Title: "RollitClient"
+Implementation-Vendor: "ss.project.client."

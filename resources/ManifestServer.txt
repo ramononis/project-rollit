@@ -1,0 +1,8 @@
+Main-Class: ss.project.server.Application
+
+Name: RollitServer
+Sealed: true
+Specification-Title: "RollitServer"
+Specification-Vendor:  "ss.project.server."
+Implementation-Title: "RollitServer"
+Implementation-Vendor: "ss.project.server."
