@@ -114,8 +114,8 @@ public class GUI extends JFrame implements ActionListener {
 	}
 
 	private JMenuBar constructMenu() {
-		final String[] titles = new String[] {"Settings", "Info"};
-		final String[][] elements = new String[][] {{"$Hide log"}, {"Info", "Authors"}};
+		final String[] titles = new String[] {"Settings", "Info", "Je moeder"};
+		final String[][] elements = new String[][] {{"$Hide log"}, {"Info", "Authors"}, {"dus"}};
 		final JMenuBar bar = new JMenuBar();
 		for (int i = 0; i < titles.length; i++) {
 			final String title = titles[i];
