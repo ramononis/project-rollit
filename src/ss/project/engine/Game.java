@@ -260,4 +260,12 @@ public class Game extends Observable {
 			return null;
 		}
 	}
+	
+	public Game deepCopy() {
+		Game game = new Game(board.dim);
+		game.reset(playerAmount);
+		game.board = board.deepCopy();
+		game.current = current;
+		return game;
+	}
 }
