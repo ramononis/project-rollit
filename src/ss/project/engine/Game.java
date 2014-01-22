@@ -1,5 +1,8 @@
 package ss.project.engine;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Observable;
 
 /**
@@ -20,14 +23,16 @@ public class Game extends Observable {
 	 */
 	private Board board;
 
+	public boolean isCopy = false;
+
+	/**
+	 * List of players by Mark.
+	 */
+	private Map<Mark, Player> players = new HashMap<Mark, Player>();
 	/**
 	 * Index of the current player.
 	 */
 	private Mark current;
-	/**
-	 * Amount of players
-	 */
-	private int playerAmount = 4;
 
 	// -- Constructors -----------------------------------------------
 	public Game() {
@@ -35,8 +40,13 @@ public class Game extends Observable {
 	}
 
 	public Game(int d) {
+		this(8, null);
+	}
+
+	public Game(int d, ArrayList<Player> ps) {
 		board = new Board(d);
 		current = Mark.RED;
+		reset(ps);
 	}
 
 	// -- Queries ----------------------------------------------------
@@ -61,11 +71,25 @@ public class Game extends Observable {
 	 * Resets the game. <br>
 	 * The board is emptied and player[0] becomes the current player.
 	 */
-	public void reset(int players) {
+	public void reset(ArrayList<Player> ps) {
 		current = Mark.RED;
-		playerAmount = players;
 		board.reset();
-
+		players.clear();
+		if (ps == null || ps.size() < 2) {
+			players.put(Mark.RED, new HumanPlayer("player1"));
+			players.put(Mark.GREEN, new HumanPlayer("player2"));
+			players.put(Mark.BLUE, new HumanPlayer("player3"));
+			players.put(Mark.YELLOW, new HumanPlayer("player4"));
+		} else {
+			players.put(Mark.RED, ps.get(0));
+			players.put(Mark.GREEN, ps.get(1));
+			if (ps.size() > 2) {
+				players.put(Mark.BLUE, ps.get(2));
+			}
+			if (ps.size() > 3) {
+				players.put(Mark.YELLOW, ps.get(3));
+			}
+		}
 		setChanged();
 		notifyObservers();
 	}
@@ -81,26 +105,30 @@ public class Game extends Observable {
 	 *            the index of the field where to place the mark
 	 */
 	public void takeTurn(int i) {
+
 		if (isValidMove(i)) {
 			board.setField(i, current);
 			takeOverBlockedFields(i);
-			switch (playerAmount) {
-			case 2:
-				if (current.equals(Mark.GREEN)) {
-					current = Mark.RED;
-				} else {
+			switch (players.size()) {
+				case 2:
+					if (current.equals(Mark.GREEN)) {
+						current = Mark.RED;
+					} else {
+						current = current.next();
+					}
+					break;
+				case 3:
+					if (current.equals(Mark.BLUE)) {
+						current = Mark.RED;
+					} else {
+						current = current.next();
+					}
+					break;
+				case 4:
 					current = current.next();
-				}
-				break;
-			case 3:
-				if (current.equals(Mark.BLUE)) {
-					current = Mark.RED;
-				} else {
-					current = current.next();
-				}
-				break;
-			case 4:
-				current = current.next();
+			}
+			if (!isCopy && !board.gameOver()) {
+				players.get(current).requestMove(this);
 			}
 			setChanged();
 			notifyObservers();
@@ -260,12 +288,20 @@ public class Game extends Observable {
 			return null;
 		}
 	}
-	
+
 	public Game deepCopy() {
 		Game game = new Game(board.dim);
-		game.reset(playerAmount);
+		game.reset(new ArrayList<Player>(players.values()));
 		game.board = board.deepCopy();
 		game.current = current;
 		return game;
+	}
+
+	public Map<Mark, Player> getPlayers() {
+		return players;
+	}
+
+	public void start() {
+		players.get(current).requestMove(this);
 	}
 }
