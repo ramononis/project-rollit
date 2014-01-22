@@ -18,10 +18,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import ss.project.ai.DumbAi;
-import ss.project.ai.NaiveAi;
+import ss.project.ai.SuicideAi;
 import ss.project.engine.ComputerPlayer;
 import ss.project.engine.Game;
-import ss.project.engine.HumanPlayer;
 import ss.project.engine.Player;
 
 public class RolitView extends JFrame implements Observer {
@@ -102,10 +101,8 @@ public class RolitView extends JFrame implements Observer {
 		Game game = new Game(8);
 		RolitView view = new RolitView(game);
 		game.addObserver(view);
-		view.players.add(new ComputerPlayer(new NaiveAi()));
-		view.players.add(new ComputerPlayer(new NaiveAi()));
-		view.players.add(new ComputerPlayer(new NaiveAi()));
-		view.players.add(new HumanPlayer("Ramon"));
+		view.players.add(new ComputerPlayer(new DumbAi()));
+		view.players.add(new ComputerPlayer(new SuicideAi()));
 		game.reset(view.players);
 		game.start();
 		view.setVisible(true);
@@ -145,7 +142,7 @@ public class RolitView extends JFrame implements Observer {
 		if (game.getBoard().isFull() && !game.getBoard().hasWinner()) {
 			label.setText("Draw!");
 		} else if (game.getBoard().hasWinner()) {
-			label.setText("The winner is " + game.getWinner());
+			label.setText("The winner is " + game.getPlayers().get(game.getWinner()).getName() + "(" + game.getWinner() + ")");
 		} else {
 			label.setText("It is " + game.getPlayers().get(game.getCurrent()).getName() + "(" + game.getCurrent() + ")\'s turn");
 		}
