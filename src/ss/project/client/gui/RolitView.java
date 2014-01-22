@@ -18,9 +18,12 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import ss.project.ai.DumbAi;
+import ss.project.ai.NaiveAi;
 import ss.project.ai.SuicideAi;
 import ss.project.engine.ComputerPlayer;
 import ss.project.engine.Game;
+import ss.project.engine.HumanPlayer;
+import ss.project.engine.Mark;
 import ss.project.engine.Player;
 
 public class RolitView extends JFrame implements Observer {
@@ -31,8 +34,33 @@ public class RolitView extends JFrame implements Observer {
 	public static final Color YELLOW = new Color(255, 255, 0);
 	public static final Color GREY = new Color(127, 127, 127);
 	public static final Color WHITE = new Color(255, 255, 255);
+
+	public static Color getColorByMark(Mark mark) {
+		Color color = null;
+		switch (mark) {
+			case BLUE:
+				color = BLUE;
+				break;
+			case GREEN:
+				color = GREEN;
+				break;
+			case RED:
+				color = RED;
+				break;
+			case YELLOW:
+				color = YELLOW;
+				break;
+			default:
+				color = GREY;
+				break;
+		}
+		return color;
+	}
+
 	public static final int DIM = 50;
 	public ArrayList<Player> players = new ArrayList<Player>();
+	private static ScorePanel scorePanel;
+
 	class RolitController implements ActionListener {
 		private Game game;
 
@@ -82,7 +110,8 @@ public class RolitView extends JFrame implements Observer {
 		button = new JButton("Another game?");
 		Container c = getContentPane();
 		Container board = new Container();
-		GridLayout boardLayout = new GridLayout(g.getBoard().dim, g.getBoard().dim);
+		GridLayout boardLayout = new GridLayout(g.getBoard().dim,
+				g.getBoard().dim);
 		board.setLayout(boardLayout);
 		for (int i = 0; i < g.getBoard().dim * g.getBoard().dim; i++) {
 			boardButtons[i] = new JButton();
@@ -101,9 +130,14 @@ public class RolitView extends JFrame implements Observer {
 		Game game = new Game(8);
 		RolitView view = new RolitView(game);
 		game.addObserver(view);
-		view.players.add(new ComputerPlayer(new DumbAi()));
+		view.players.add(new HumanPlayer("Ramon"));
 		view.players.add(new ComputerPlayer(new SuicideAi()));
+		view.players.add(new ComputerPlayer(new DumbAi()));
+		view.players.add(new ComputerPlayer(new NaiveAi()));
 		game.reset(view.players);
+		scorePanel = new ScorePanel(game);
+		game.addObserver(scorePanel);
+		view.add(scorePanel);
 		game.start();
 		view.setVisible(true);
 	}
@@ -114,37 +148,25 @@ public class RolitView extends JFrame implements Observer {
 			JButton boardButton = boardButtons[i];
 			boardButton.setEnabled(game.isValidMove(i)
 					&& !game.getBoard().gameOver());
-			//boardButton.setText(game.getBoard().getField(i).toString());
-			switch(game.getBoard().getField(i)) {
-				case BLUE:
-					boardButton.setBackground(BLUE);
-					break;
-				case GREEN:
-					boardButton.setBackground(GREEN);
-					break;
-				case RED:
-					boardButton.setBackground(RED);
-					break;
-				case YELLOW:
-					boardButton.setBackground(YELLOW);
-					break;
-				default:
-					boardButton.setBackground(GREY);
-					break;
-			
-			}
+			// boardButton.setText(game.getBoard().getField(i).toString());
+			boardButton.setBackground(getColorByMark(game.getBoard()
+					.getField(i)));
 			if (game.isValidMove(i)) {
 				boardButton.setBackground(WHITE);
 			}
 		}
-		
+
 		button.setEnabled(game.getBoard().gameOver());
 		if (game.getBoard().isFull() && !game.getBoard().hasWinner()) {
 			label.setText("Draw!");
 		} else if (game.getBoard().hasWinner()) {
-			label.setText("The winner is " + game.getPlayers().get(game.getWinner()).getName() + "(" + game.getWinner() + ")");
+			label.setText("The winner is "
+					+ game.getPlayers().get(game.getWinner()).getName() + "("
+					+ game.getWinner() + ")");
 		} else {
-			label.setText("It is " + game.getPlayers().get(game.getCurrent()).getName() + "(" + game.getCurrent() + ")\'s turn");
+			label.setText("It is "
+					+ game.getPlayers().get(game.getCurrent()).getName() + "("
+					+ game.getCurrent() + ")\'s turn");
 		}
 	}
 }
