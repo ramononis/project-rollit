@@ -1,5 +1,7 @@
 package ss.project.engine;
 
+import java.awt.Color;
+
 /**
  * Represents a mark in the Rolit game. There five possible values: Mark.RED,
  * Mark.GREEN, Mark.BLUE, Mark.YELLOW and Mark.EMPTY. Module 2 lab assignment
@@ -32,7 +34,28 @@ public enum Mark {
 				return RED;
 			default:
 				return EMPTY;
-					
 		}
+	}
+
+	public Color toColor() {
+		Color color = null;
+		switch (this) {
+			case BLUE:
+				color = new Color(0, 0, 255);
+				break;
+			case GREEN:
+				color = new Color(0, 255, 0);
+				break;
+			case RED:
+				color = new Color(255, 0, 0);
+				break;
+			case YELLOW:
+				color = new Color(255, 255, 0);
+				break;
+			default:
+				color = new Color(127, 127, 127);
+				break;
+		}
+		return color;
 	}
 }

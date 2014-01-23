@@ -17,45 +17,15 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import ss.project.ai.DumbAi;
-import ss.project.ai.NaiveAi;
-import ss.project.ai.SuicideAi;
-import ss.project.engine.ComputerPlayer;
 import ss.project.engine.Game;
 import ss.project.engine.HumanPlayer;
-import ss.project.engine.Mark;
 import ss.project.engine.Player;
 
 public class RolitView extends JFrame implements Observer {
 	// CONSTANTS
-	public static final Color RED = new Color(255, 0, 0);
-	public static final Color GREEN = new Color(0, 255, 0);
-	public static final Color BLUE = new Color(0, 0, 255);
-	public static final Color YELLOW = new Color(255, 255, 0);
-	public static final Color GREY = new Color(127, 127, 127);
 	public static final Color WHITE = new Color(255, 255, 255);
 
-	public static Color getColorByMark(Mark mark) {
-		Color color = null;
-		switch (mark) {
-			case BLUE:
-				color = BLUE;
-				break;
-			case GREEN:
-				color = GREEN;
-				break;
-			case RED:
-				color = RED;
-				break;
-			case YELLOW:
-				color = YELLOW;
-				break;
-			default:
-				color = GREY;
-				break;
-		}
-		return color;
-	}
+
 
 	public static final int DIM = 50;
 	public ArrayList<Player> players = new ArrayList<Player>();
@@ -131,9 +101,9 @@ public class RolitView extends JFrame implements Observer {
 		RolitView view = new RolitView(game);
 		game.addObserver(view);
 		view.players.add(new HumanPlayer("Ramon"));
-		view.players.add(new ComputerPlayer(new SuicideAi()));
-		view.players.add(new ComputerPlayer(new DumbAi()));
-		view.players.add(new ComputerPlayer(new NaiveAi()));
+		view.players.add(new HumanPlayer("Ramon"));
+		view.players.add(new HumanPlayer("Ramon"));
+		view.players.add(new HumanPlayer("Ramon"));
 		game.reset(view.players);
 		scorePanel = new ScorePanel(game);
 		game.addObserver(scorePanel);
@@ -149,8 +119,8 @@ public class RolitView extends JFrame implements Observer {
 			boardButton.setEnabled(game.isValidMove(i)
 					&& !game.getBoard().gameOver());
 			// boardButton.setText(game.getBoard().getField(i).toString());
-			boardButton.setBackground(getColorByMark(game.getBoard()
-					.getField(i)));
+			boardButton.setBackground(game.getBoard()
+					.getField(i).toColor());
 			if (game.isValidMove(i)) {
 				boardButton.setBackground(WHITE);
 			}

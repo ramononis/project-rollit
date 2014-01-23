@@ -1,4 +1,4 @@
-package ss.project.logging;
+package ss.project.server.logging;
 import java.util.Date;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;

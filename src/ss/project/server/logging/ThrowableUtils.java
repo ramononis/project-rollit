@@ -1,4 +1,4 @@
-package ss.project.logging;
+package ss.project.server.logging;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;

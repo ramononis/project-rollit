@@ -1,4 +1,4 @@
-package ss.project.logging;
+package ss.project.server.logging;
 
 import java.awt.*;
 import java.io.*;

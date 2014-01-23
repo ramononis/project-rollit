@@ -79,8 +79,7 @@ public class ScorePanel extends JPanel implements Observer {
 		setLayout(layout);
 		items = new HashMap<Mark, ScorePanelItem>();
 		for (Mark mark : game.getPlayers().keySet()) {
-			ScorePanelItem item = new ScorePanelItem(
-					RolitView.getColorByMark(mark), 0, game.getPlayers()
+			ScorePanelItem item = new ScorePanelItem(mark.toColor(), 0, game.getPlayers()
 							.get(mark).getName());
 			add(item);
 			items.put(mark, item);

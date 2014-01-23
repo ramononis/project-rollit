@@ -27,10 +27,10 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.FontUIResource;
 
-import ss.project.server.Application;
-import ss.project.logging.TextAreaLogHandler;
+import ss.project.server.ServerApplication;
+import ss.project.server.logging.TextAreaLogHandler;
 
-public class GUI extends JFrame implements ActionListener {
+public class ServerGUI extends JFrame implements ActionListener {
 	private static final long serialVersionUID = -4411033752001988794L;
 
 	static {
@@ -40,7 +40,7 @@ public class GUI extends JFrame implements ActionListener {
 	private JToolBar toolBar;
 	private JScrollPane textScroll;
 
-	public GUI() {
+	public ServerGUI() {
 		UIManager.put("ToolTip.font", new FontUIResource("SansSerif",
 				Font.BOLD, 22));
 		try {
@@ -55,18 +55,18 @@ public class GUI extends JFrame implements ActionListener {
 		setResizable(true);
 		setMinimumSize(new Dimension(800, 600));
 		setLocationRelativeTo(getOwner());
-		setExtendedState(this.getExtendedState() | GUI.MAXIMIZED_BOTH);
+		setExtendedState(this.getExtendedState() | ServerGUI.MAXIMIZED_BOTH);
 		setVisible(true);
-		log = Logger.getLogger(GUI.class.getName());
+		log = Logger.getLogger(ServerGUI.class.getName());
 		log("STARTUP SUCCESFULL");
 	}
 
 	public void log(String message) {
-		GUI.log.info(message);
+		ServerGUI.log.info(message);
 	}
 
 	public void logError(String message) {
-		GUI.log.log(Level.WARNING, "ERROR: " + message);
+		ServerGUI.log.log(Level.WARNING, "ERROR: " + message);
 	}
 
 	public void actionPerformed(final ActionEvent e) {
@@ -145,20 +145,15 @@ public class GUI extends JFrame implements ActionListener {
 		}
 		return bar;
 	}
-
-	private GUI getGUI() {
-		return this;
-	}
-
 	private void initializeGUI() {
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		if (Application.runningFromJar) {
+		if (ServerApplication.runningFromJar) {
 			setIconImage(Toolkit.getDefaultToolkit().getImage(
 					getClass().getResource("/resources/images/ICON.PNG")));
 		}
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(final WindowEvent e) {
-				int close = JOptionPane.showConfirmDialog(getGUI(),
+				int close = JOptionPane.showConfirmDialog(ServerGUI.this,
 						"Close the application?", "Close?",
 						JOptionPane.OK_CANCEL_OPTION,
 						JOptionPane.QUESTION_MESSAGE);

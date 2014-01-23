@@ -1,4 +1,4 @@
-package ss.project.logging;
+package ss.project.server.logging;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Level;
