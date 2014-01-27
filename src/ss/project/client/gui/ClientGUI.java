@@ -8,6 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import javax.swing.Box;
 import javax.swing.JCheckBoxMenuItem;
@@ -24,6 +27,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.FontUIResource;
 
 import ss.project.client.ClientApplication;
+import ss.project.server.Server;
 
 public class ClientGUI extends JFrame implements ActionListener {
 	private static final long serialVersionUID = -4411033752001988794L;
@@ -49,9 +53,7 @@ public class ClientGUI extends JFrame implements ActionListener {
 		setMinimumSize(new Dimension(800, 600));
 		setLocationRelativeTo(getOwner());
 		setExtendedState(this.getExtendedState() | ClientGUI.MAXIMIZED_BOTH);
-		setVisible(true);
 	}
-
 
 	public void actionPerformed(final ActionEvent e) {
 		String action = e.getActionCommand();
@@ -139,5 +141,39 @@ public class ClientGUI extends JFrame implements ActionListener {
 		toolBar.setFloatable(false);
 		toolBar.add(Box.createHorizontalGlue());
 		add(toolBar, BorderLayout.NORTH);
+	}
+
+	public InetAddress askForIP() {
+		InetAddress address = null;
+		while (address == null) {
+			String inputString = JOptionPane.showInputDialog(this,
+					"Enter the server's IP address", "Enter IP address",
+					JOptionPane.QUESTION_MESSAGE);
+			try {
+				address = InetAddress.getByName(inputString);
+			} catch (UnknownHostException e) {
+				JOptionPane.showMessageDialog(this,
+						"Please enter a valid IP address",
+						"IP address invalid", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+		return address;
+	}
+
+	public int askForPortNumber() {
+		int port = -1;
+		while (port == -1) {
+			String inputString = JOptionPane.showInputDialog(this,
+					"Enter a port number between 1100 and 65535: ",
+					"Port number", JOptionPane.QUESTION_MESSAGE);
+			try {
+				port = Integer.parseInt(inputString);
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this,
+						"Please enter a valid number", "Number Invalid",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		}
+		return port;
 	}
 }

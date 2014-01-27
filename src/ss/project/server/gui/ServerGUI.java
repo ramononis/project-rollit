@@ -145,11 +145,11 @@ public class ServerGUI extends JFrame implements Observer {
 		return port;
 	}
 
-	public void log(String message) {
+	public static void log(String message) {
 		ServerGUI.log.info(message);
 	}
 
-	public void logError(String message) {
+	public static void logError(String message) {
 		ServerGUI.log.log(Level.WARNING, "ERROR: " + message);
 	}
 

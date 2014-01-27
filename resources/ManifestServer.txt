@@ -1,4 +1,4 @@
-Main-Class: ss.project.server.Application
+Main-Class: ss.project.server.ServerApplication
 
 Name: RollitServer
 Sealed: true

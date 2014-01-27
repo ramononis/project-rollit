@@ -1,4 +1,4 @@
-Main-Class: ss.project.client.Application
+Main-Class: ss.project.client.ClientApplication
 
 Name: RollitClient
 Sealed: true

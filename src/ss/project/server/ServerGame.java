@@ -1,6 +1,7 @@
 package ss.project.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 import ss.project.engine.Game;
@@ -22,5 +23,5 @@ public class ServerGame extends Game {
 		reset(players);
 	}
 
-	public Map<Player, ServerPeer> peers;
+	public Map<Player, ServerPeer> peers = new HashMap<Player, ServerPeer>();
 }

@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Observable;
 
+import ss.project.server.gui.ServerGUI;
+
 public class Server extends Observable implements Runnable {
 	/**
 	 * Checks to see if a specific port is available.
@@ -83,7 +85,7 @@ public class Server extends Observable implements Runnable {
 		for (ServerPeer peer : peers) {
 			idlePeerList.remove(peer);
 		}
-		System.out.println("Game no. " + gameList.size() + " started");
+		ServerGUI.log("Game no. " + gameList.size() + " started");
 		ServerGame game = new ServerGame(peers);
 		gameList.add(game);
 	}
@@ -94,7 +96,7 @@ public class Server extends Observable implements Runnable {
 			while (true) {
 				Socket socket = serverSocket.accept();
 				peerCounter++;
-				System.out.println("[Client no. " + peerCounter
+				ServerGUI.log("[Client no. " + peerCounter
 						+ " has connected]");
 				ServerPeer peer = new ServerPeer("peer" + peerCounter, socket);
 				addPeer(peer);
