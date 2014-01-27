@@ -20,7 +20,6 @@ public class Server extends Observable implements Runnable {
 		if (port < 1100 || port > 65535) {
 			return false;
 		}
-
 		ServerSocket ss = null;
 		DatagramSocket ds = null;
 		try {
@@ -43,7 +42,6 @@ public class Server extends Observable implements Runnable {
 				}
 			}
 		}
-
 		return false;
 	}
 
@@ -67,6 +65,8 @@ public class Server extends Observable implements Runnable {
 
 	public void addPeer(ServerPeer newPeer) {
 		idlePeerList.add(newPeer);
+		setChanged();
+		notifyObservers(newPeer);
 		System.out.println("Peer no. " + peerCounter + " connected");
 		if (idlePeerList.size() >= 2) {
 			ArrayList<ServerPeer> gamePeers = new ArrayList<ServerPeer>();
@@ -88,6 +88,8 @@ public class Server extends Observable implements Runnable {
 		ServerGUI.log("Game no. " + gameList.size() + " started");
 		ServerGame game = new ServerGame(peers);
 		gameList.add(game);
+		setChanged();
+		notifyObservers(game);
 	}
 
 	@Override

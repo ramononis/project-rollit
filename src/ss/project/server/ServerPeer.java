@@ -7,14 +7,17 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
-public class ServerPeer {
-	public static final String EXIT = "exit";
+import ss.project.engine.Mark;
+import ss.project.gui.ProtocolConstants;
 
+public class ServerPeer implements Runnable, ProtocolConstants{
+	public static final String EXIT = "exit";
 	protected String name;
 	protected Socket sock;
 	protected BufferedReader in;
 	protected BufferedWriter out;
 	private int minimumPlayers = 2;
+	private ServerGame game;
 
 	/*
 	 * @ requires (nameArg != null) && (sockArg != null);
@@ -28,16 +31,17 @@ public class ServerPeer {
 	 *            Socket of the Peer-proces
 	 */
 	public ServerPeer(String nameArg, Socket sockArg) throws IOException {
-		this.name = nameArg;
-		this.sock = sockArg;
-		this.in = new BufferedReader(new InputStreamReader(
+		name = nameArg;
+		sock = sockArg;
+		in = new BufferedReader(new InputStreamReader(
 				sockArg.getInputStream()));
-		this.out = new BufferedWriter(new OutputStreamWriter(
+		out = new BufferedWriter(new OutputStreamWriter(
 				sockArg.getOutputStream()));
+		new Thread(this).start();
 	}
 
 	/**
-	 * Closes the connection, the sockets will be terminated
+	 * Closes the connection, the sockets will be terminated.
 	 */
 	public void shutDown() {
 		try {
@@ -53,24 +57,13 @@ public class ServerPeer {
 		}
 	}
 
-	/** returns name of the peer object */
+	/**
+	 * returns name of the peer object.
+	 */
 	public String getName() {
 		return name;
 	}
 
-	/** read a line from the default input */
-	static public String readString(String tekst) {
-		System.out.print(tekst);
-		String antw = null;
-		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					System.in));
-			antw = in.readLine();
-		} catch (IOException e) {
-		}
-
-		return (antw == null) ? "" : antw;
-	}
 
 	public int getMinimumPlayers() {
 		return minimumPlayers;
@@ -78,5 +71,56 @@ public class ServerPeer {
 
 	public void setMinimumPlayers(int minimum) {
 		minimumPlayers = minimum;
+	}
+	public void sendStart(int n, Mark mark) {
+		
+		try {
+			out.write(START_GAME + n + mark.toString() + "\n");
+			out.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	public void sendTurn(int i) {
+		try {
+			System.out.println(this);
+			out.write(SEND_TURN + i + "\n");
+			out.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @return the game
+	 */
+	public ServerGame getGame() {
+		return game;
+	}
+
+	/**
+	 * @param game
+	 *            the game to set
+	 */
+	public void setGame(ServerGame g) {
+		game = g;
+	}
+
+	@Override
+	public void run() {
+		try {
+			while (true) {
+				String line = in.readLine();
+				System.out.print(line);
+				if (line.contains(SEND_TURN)) {
+					game.takeTurn(Integer.parseInt(line.replaceAll(SEND_TURN,
+							"")));
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

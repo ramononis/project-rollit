@@ -1,4 +1,4 @@
-package ss.project.client.gui;
+package ss.project.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;

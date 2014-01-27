@@ -17,6 +17,7 @@ public class ServerApplication {
 		server = new Server();
 		gui = new ServerGUI(server);
 		server.setPort(gui.askForPortNumber());
+		server.addObserver(gui);
 		gui.setVisible(true);
 	}
 }

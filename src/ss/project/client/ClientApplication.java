@@ -5,15 +5,15 @@ import java.net.InetAddress;
 import java.net.URL;
 
 import javax.swing.JOptionPane;
-
 import ss.project.client.gui.ClientGUI;
 
 public class ClientApplication {
-	public static ClientGUI gui;
-	public static Client client;
+	private static ClientGUI gui;
+	private static Client client;
 	public static boolean runningFromJar = false;
 
 	public static void main(String[] args) throws IOException {
+
 		final URL resource = ClientApplication.class
 				.getResource("/resources/images/ICON.PNG");
 		if (resource != null) {
@@ -35,6 +35,8 @@ public class ClientApplication {
 						JOptionPane.ERROR_MESSAGE);
 			}
 		}
+		client.addObserver(gui);
 		gui.setVisible(true);
 	}
+
 }

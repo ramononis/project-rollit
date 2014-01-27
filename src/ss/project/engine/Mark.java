@@ -58,4 +58,21 @@ public enum Mark {
 		}
 		return color;
 	}
+
+	public static Mark fromString(String s) {
+		
+		Mark result = null;
+		if (s.equals("BLUE")) {
+			result = BLUE;
+		} else if (s.equals("GREEN")) {
+			result = GREEN;
+		} else if (s.equals("RED")) {
+			result = RED;
+		} else if (s.equals("YELLOW")) {
+			result = YELLOW;
+		} else if (s.equals("EMPTY")) {
+			result = EMPTY;
+		}
+		return result;
+	}
 }

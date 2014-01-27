@@ -2,7 +2,6 @@ package ss.project.server.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -21,21 +20,24 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.plaf.FontUIResource;
 
+import ss.project.engine.Mark;
+import ss.project.gui.RolitView;
+import ss.project.gui.ScorePanel;
 import ss.project.server.Server;
 import ss.project.server.ServerApplication;
+import ss.project.server.ServerGame;
+import ss.project.server.ServerPeer;
 import ss.project.server.logging.TextAreaLogHandler;
 
 public class ServerGUI extends JFrame implements Observer {
 	private static final long serialVersionUID = -4411033752001988794L;
 	private ServerController controller;
+	private JTabbedPane tabbedPane;
 
 	class ServerController implements ActionListener {
 		private Server server;
@@ -91,24 +93,12 @@ public class ServerGUI extends JFrame implements Observer {
 		}
 	}
 
-	static {
-		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-	}
 	static Logger log;
 	private JToolBar toolBar;
 	private JScrollPane textScroll;
 
 	public ServerGUI(Server s) {
 		controller = new ServerController(s);
-		UIManager.put("ToolTip.font", new FontUIResource("SansSerif",
-				Font.BOLD, 22));
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		} catch (ReflectiveOperationException e) {
-			e.printStackTrace();
-		}
 		initializeGUI();
 		setTitle("Rollit Server");
 		setResizable(true);
@@ -151,50 +141,6 @@ public class ServerGUI extends JFrame implements Observer {
 
 	public static void logError(String message) {
 		ServerGUI.log.log(Level.WARNING, "ERROR: " + message);
-	}
-
-	public void actionPerformed(final ActionEvent e) {
-		String action = e.getActionCommand();
-		final int z = action.indexOf('.');
-		final String[] command = new String[2];
-		if (z == -1) {
-			command[0] = action;
-			command[1] = "";
-		} else {
-			command[0] = action.substring(0, z);
-			command[1] = action.substring(z + 1);
-		}
-		if (command[0].equals("Info")) {
-			if (command[1].equals("Info")) {
-				JOptionPane.showMessageDialog(this, new String[] {
-						"University of Twente-Bachelor Computer Science",
-						"Software Systems Module Programming Project" },
-						"Info", JOptionPane.INFORMATION_MESSAGE);
-			}
-			if (command[1].equals("Authors")) {
-				JOptionPane.showMessageDialog(this,
-						new String[] { "Group 14 - Ramon Onis, Tim Blok" },
-						"Info", JOptionPane.INFORMATION_MESSAGE);
-			}
-		}
-		if (command[0].equals("Settings")) {
-			if (command[1].equals("Hide log")) {
-				textScroll.setVisible(!((JCheckBoxMenuItem) e.getSource())
-						.isSelected());
-				if ((getExtendedState() & Frame.MAXIMIZED_BOTH) != Frame.MAXIMIZED_BOTH) {
-					Dimension size = getSize();
-					log("size");
-					pack();
-					size.height += textScroll.getSize().height
-							* (((JCheckBoxMenuItem) e.getSource()).isSelected() ? -1
-									: 1);
-					setSize(size);
-				} else {
-					pack();
-					setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
-				}
-			}
-		}
 	}
 
 	private JMenuBar constructMenu() {
@@ -260,13 +206,30 @@ public class ServerGUI extends JFrame implements Observer {
 				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		textScroll.setBorder(null);
 		textScroll.setVisible(true);
+		tabbedPane = new JTabbedPane();
 		add(toolBar, BorderLayout.NORTH);
+		add(tabbedPane, BorderLayout.CENTER);
 		add(textScroll, BorderLayout.SOUTH);
 	}
 
 	@Override
 	public void update(Observable o, Object arg) {
-		// TODO Auto-generated method stub
 
+		if (o instanceof Server) {
+			Server server = (Server) o;
+			if (arg instanceof ServerGame) {
+				ServerGame game = (ServerGame) arg;
+				RolitView gameView = new RolitView(game, Mark.EMPTY);
+				game.addObserver(gameView);
+				ScorePanel scorePanel = new ScorePanel(game);
+				game.addObserver(scorePanel);
+				gameView.add(scorePanel);
+				tabbedPane.add(game.getName(), gameView);
+				game.start();
+			}
+			if (arg instanceof ServerPeer) {
+				ServerPeer peer = (ServerPeer) arg;
+			}
+		}
 	}
 }

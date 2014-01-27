@@ -1,4 +1,4 @@
-package ss.project.client.gui;
+package ss.project.gui;
 
 import java.awt.Color;
 import java.awt.Container;
@@ -12,17 +12,19 @@ import java.util.Observer;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import ss.project.engine.Game;
 import ss.project.engine.HumanPlayer;
+import ss.project.engine.Mark;
 import ss.project.engine.Player;
 
 public class RolitView extends Container implements Observer {
 	// CONSTANTS
 	public static final Color WHITE = new Color(255, 255, 255);
 
-	private boolean isServerSide = false;
+	private Mark usersMark = null;
 	public static final int DIM = 50;
 	private ArrayList<Player> players = new ArrayList<Player>();
 	private static ScorePanel scorePanel;
@@ -40,6 +42,7 @@ public class RolitView extends Container implements Observer {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
+			System.out.print("bla");
 			for (int i = 0; i < game.getBoard().dim * game.getBoard().dim; i++) {
 				if (boardButtons[i].equals(e.getSource())) {
 					game.takeTurn(i);
@@ -59,9 +62,9 @@ public class RolitView extends Container implements Observer {
 		controller = new RolitController(g);
 	}
 
-	public RolitView(Game g, boolean serverSide) {
+	public RolitView(Game g, Mark mark) {
 		this(g);
-		isServerSide = serverSide;
+		setUsersMark(mark);
 	}
 
 	public JButton[] boardButtons;
@@ -102,15 +105,17 @@ public class RolitView extends Container implements Observer {
 		game.addObserver(scorePanel);
 		view.add(scorePanel);
 		game.start();
-		view.setVisible(true);
+		JFrame frame = new JFrame();
+		frame.add(view);
+		frame.setVisible(true);
 	}
 
 	public void update(Observable o, Object arg) {
 		Game game = (Game) o;
 		for (int i = 0; i < game.getBoard().dim * game.getBoard().dim; i++) {
 			JButton boardButton = boardButtons[i];
-			boardButton.setEnabled(!isServerSide && game.isValidMove(i)
-					&& !game.getBoard().gameOver());
+			boardButton.setEnabled(game.getCurrent().equals(usersMark)
+					&& game.isValidMove(i) && !game.getBoard().gameOver());
 			boardButton.setBackground(game.getBoard().getField(i).toColor());
 			if (game.isValidMove(i)) {
 				boardButton.setBackground(WHITE);
@@ -128,6 +133,16 @@ public class RolitView extends Container implements Observer {
 			label.setText("It is "
 					+ game.getPlayers().get(game.getCurrent()).getName() + "("
 					+ game.getCurrent() + ")\'s turn");
+		}
+	}
+
+	public Mark getUsersMark() {
+		return usersMark;
+	}
+
+	public void setUsersMark(Mark mark) {
+		if (mark != null) {
+			usersMark = mark;
 		}
 	}
 }

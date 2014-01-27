@@ -2,15 +2,15 @@ package ss.project.client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Observable;
+import java.util.Observer;
 
 import javax.swing.Box;
 import javax.swing.JCheckBoxMenuItem;
@@ -19,34 +19,21 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.plaf.FontUIResource;
 
+import ss.project.client.Client;
 import ss.project.client.ClientApplication;
-import ss.project.server.Server;
+import ss.project.engine.Game;
+import ss.project.gui.RolitView;
+import ss.project.gui.ScorePanel;
 
-public class ClientGUI extends JFrame implements ActionListener {
+public class ClientGUI extends JFrame implements ActionListener, Observer {
 	private static final long serialVersionUID = -4411033752001988794L;
 
-	static {
-		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-	}
 	private JToolBar toolBar;
 
 	public ClientGUI() {
-		UIManager.put("ToolTip.font", new FontUIResource("SansSerif",
-				Font.BOLD, 22));
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		} catch (ReflectiveOperationException e) {
-			e.printStackTrace();
-		}
 		initializeGUI();
 		setTitle("Rollit Client");
 		setResizable(true);
@@ -175,5 +162,22 @@ public class ClientGUI extends JFrame implements ActionListener {
 			}
 		}
 		return port;
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		if (o instanceof Client) {
+			Client client = (Client) o;
+			if (arg instanceof Game) {
+				Game game = (Game) arg;
+				RolitView gameView = new RolitView(game, client.getMyMark());
+				game.addObserver(gameView);
+				ScorePanel scorePanel = new ScorePanel(game);
+				game.addObserver(scorePanel);
+				gameView.add(scorePanel);
+				add(gameView, BorderLayout.CENTER);
+				game.start();
+			}
+		}
 	}
 }

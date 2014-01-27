@@ -23,6 +23,7 @@ public class Game extends Observable {
 	 */
 	private Board board;
 
+	private String name = "game";
 	public boolean isCopy = false;
 
 	/**
@@ -303,5 +304,24 @@ public class Game extends Observable {
 
 	public void start() {
 		players.get(current).requestMove(this);
+		setChanged();
+		notifyObservers();
+	}
+
+	/**
+	 * @return the name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * @param n
+	 *            the name to set
+	 */
+	public void setName(String n) {
+		if (n != null) {
+			name = n;
+		}
 	}
 }
