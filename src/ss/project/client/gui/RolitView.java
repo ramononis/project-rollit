@@ -22,10 +22,9 @@ public class RolitView extends Container implements Observer {
 	// CONSTANTS
 	public static final Color WHITE = new Color(255, 255, 255);
 
-
-
+	private boolean isServerSide = false;
 	public static final int DIM = 50;
-	public ArrayList<Player> players = new ArrayList<Player>();
+	private ArrayList<Player> players = new ArrayList<Player>();
 	private static ScorePanel scorePanel;
 
 	class RolitController implements ActionListener {
@@ -58,6 +57,11 @@ public class RolitView extends Container implements Observer {
 	public RolitView(Game g) {
 		init(g);
 		controller = new RolitController(g);
+	}
+
+	public RolitView(Game g, boolean serverSide) {
+		this(g);
+		isServerSide = serverSide;
 	}
 
 	public JButton[] boardButtons;
@@ -105,11 +109,9 @@ public class RolitView extends Container implements Observer {
 		Game game = (Game) o;
 		for (int i = 0; i < game.getBoard().dim * game.getBoard().dim; i++) {
 			JButton boardButton = boardButtons[i];
-			boardButton.setEnabled(game.isValidMove(i)
+			boardButton.setEnabled(!isServerSide && game.isValidMove(i)
 					&& !game.getBoard().gameOver());
-			// boardButton.setText(game.getBoard().getField(i).toString());
-			boardButton.setBackground(game.getBoard()
-					.getField(i).toColor());
+			boardButton.setBackground(game.getBoard().getField(i).toColor());
 			if (game.isValidMove(i)) {
 				boardButton.setBackground(WHITE);
 			}

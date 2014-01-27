@@ -36,11 +36,13 @@ import ss.project.server.logging.TextAreaLogHandler;
 public class ServerGUI extends JFrame implements Observer {
 	private static final long serialVersionUID = -4411033752001988794L;
 	private ServerController controller;
+
 	class ServerController implements ActionListener {
 		private Server server;
+
 		public ServerController(Server s) {
 			server = s;
-			
+
 		}
 
 		public void actionPerformed(final ActionEvent e) {
@@ -76,17 +78,19 @@ public class ServerGUI extends JFrame implements Observer {
 						log("size");
 						pack();
 						size.height += textScroll.getSize().height
-								* (((JCheckBoxMenuItem) e.getSource()).isSelected() ? -1
-										: 1);
+								* (((JCheckBoxMenuItem) e.getSource())
+										.isSelected() ? -1 : 1);
 						setSize(size);
 					} else {
 						pack();
-						setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+						setExtendedState(getExtendedState()
+								| JFrame.MAXIMIZED_BOTH);
 					}
 				}
 			}
 		}
 	}
+
 	static {
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 	}
@@ -263,6 +267,6 @@ public class ServerGUI extends JFrame implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

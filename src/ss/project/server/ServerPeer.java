@@ -31,7 +31,7 @@ public class ServerPeer {
 		this.name = nameArg;
 		this.sock = sockArg;
 		this.in = new BufferedReader(new InputStreamReader(
-					sockArg.getInputStream()));
+				sockArg.getInputStream()));
 		this.out = new BufferedWriter(new OutputStreamWriter(
 				sockArg.getOutputStream()));
 	}
@@ -41,7 +41,7 @@ public class ServerPeer {
 	 */
 	public void shutDown() {
 		try {
-			
+
 			in.close();
 			out.close();
 			sock.close();
@@ -76,7 +76,7 @@ public class ServerPeer {
 		return minimumPlayers;
 	}
 
-	public void setMinimumPlayers(int minimumPlayers) {
-		this.minimumPlayers = minimumPlayers;
+	public void setMinimumPlayers(int minimum) {
+		minimumPlayers = minimum;
 	}
 }

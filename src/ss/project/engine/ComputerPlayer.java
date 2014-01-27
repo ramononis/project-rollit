@@ -2,14 +2,10 @@ package ss.project.engine;
 
 import ss.project.ai.Ai;
 
-public class ComputerPlayer implements Player {
+public class ComputerPlayer extends Player {
 	private Ai ai;
 	public ComputerPlayer(Ai newAi) {
 		setAi(newAi);
-	}
-	@Override
-	public String getName() {
-		return ai.getName();
 	}
 
 	@Override
@@ -21,6 +17,7 @@ public class ComputerPlayer implements Player {
 	}
 	public void setAi(Ai newAi) {
 		ai = newAi;
+		setName(ai.getName());
 	}
 
 }

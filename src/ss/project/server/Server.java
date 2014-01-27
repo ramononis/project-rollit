@@ -7,10 +7,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Observable;
 
-import ss.project.engine.Game;
-
-//TODO (TIM): implement server functionality.
-public class Server extends Observable {
+public class Server extends Observable implements Runnable {
 	/**
 	 * Checks to see if a specific port is available.
 	 * 
@@ -48,8 +45,8 @@ public class Server extends Observable {
 		return false;
 	}
 
-	private ArrayList<Game> gameList = new ArrayList<Game>();
-	private ArrayList<ServerPeer> peerList = new ArrayList<ServerPeer>();
+	private ArrayList<ServerGame> gameList = new ArrayList<ServerGame>();
+	private ArrayList<ServerPeer> idlePeerList = new ArrayList<ServerPeer>();
 	private int peerCounter = 0;
 	private ServerSocket serverSocket;
 
@@ -59,18 +56,48 @@ public class Server extends Observable {
 	public void setPort(int p) {
 		try {
 			serverSocket = new ServerSocket(p);
-
+			
 		} catch (IOException e) {
 			System.out.println("Dit is echt zo jammer!");
 		}
+		new Thread(this).start();
+	}
+
+	public void addPeer(ServerPeer newPeer) {
+		idlePeerList.add(newPeer);
+		System.out.println("Peer no. " + peerCounter + " connected");
+		if (idlePeerList.size() >= 2) {
+			ArrayList<ServerPeer> gamePeers = new ArrayList<ServerPeer>();
+			for (ServerPeer peer : idlePeerList) {
+				if (peer.getMinimumPlayers() <= idlePeerList.size()) {
+					gamePeers.add(peer);
+				}
+			}
+			if (gamePeers.size() >= 2) {
+				startNewGame(gamePeers);
+			}
+		}
+	}
+
+	public void startNewGame(ArrayList<ServerPeer> peers) {
+		for (ServerPeer peer : peers) {
+			idlePeerList.remove(peer);
+		}
+		System.out.println("Game no. " + gameList.size() + " started");
+		ServerGame game = new ServerGame(peers);
+		gameList.add(game);
+	}
+
+	@Override
+	public void run() {
 		try {
 			while (true) {
 				Socket socket = serverSocket.accept();
 				peerCounter++;
-				System.out.println("[Client no. " + peerCounter + " has connected]");
+				System.out.println("[Client no. " + peerCounter
+						+ " has connected]");
 				ServerPeer peer = new ServerPeer("peer" + peerCounter, socket);
-				peerList.add(peer);
-				
+				addPeer(peer);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
