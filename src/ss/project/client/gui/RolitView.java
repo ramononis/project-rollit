@@ -6,22 +6,19 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import ss.project.engine.Game;
 import ss.project.engine.HumanPlayer;
 import ss.project.engine.Player;
 
-public class RolitView extends JFrame implements Observer {
+public class RolitView extends Container implements Observer {
 	// CONSTANTS
 	public static final Color WHITE = new Color(255, 255, 255);
 
@@ -59,12 +56,6 @@ public class RolitView extends JFrame implements Observer {
 	private static final long serialVersionUID = -6378476084079904281L;
 
 	public RolitView(Game g) {
-		addWindowListener(new WindowAdapter() {
-			@Override
-			public void windowClosing(WindowEvent e) {
-				System.exit(0);
-			}
-		});
 		init(g);
 		controller = new RolitController(g);
 	}
@@ -78,7 +69,6 @@ public class RolitView extends JFrame implements Observer {
 		boardButtons = new JButton[g.getBoard().dim * g.getBoard().dim];
 		label = new JLabel("Its RED's turn");
 		button = new JButton("Another game?");
-		Container c = getContentPane();
 		Container board = new Container();
 		GridLayout boardLayout = new GridLayout(g.getBoard().dim,
 				g.getBoard().dim);
@@ -88,12 +78,11 @@ public class RolitView extends JFrame implements Observer {
 			boardButtons[i].setPreferredSize(new Dimension(DIM, DIM));
 			board.add(boardButtons[i]);
 		}
-		BoxLayout layout = new BoxLayout(c, BoxLayout.Y_AXIS);
-		c.setLayout(layout);
+		BoxLayout layout = new BoxLayout(this, BoxLayout.Y_AXIS);
+		setLayout(layout);
 		add(board);
 		add(label);
 		add(button);
-		pack();
 	}
 
 	public static void main(String[] args) {

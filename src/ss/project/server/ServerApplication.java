@@ -6,6 +6,7 @@ import ss.project.server.gui.ServerGUI;
 import ss.project.server.logging.LoggingBootstrap;
 public class ServerApplication {
 	public static ServerGUI gui;
+	public static Server server;
 	public static boolean runningFromJar = false;
 	public static void main(String[] args) throws IOException {
 		final URL resource = ServerApplication.class.getResource("/resources/images/ICON.PNG");
@@ -13,6 +14,9 @@ public class ServerApplication {
 			runningFromJar = true;
 		}
 		LoggingBootstrap.bootstrap();
-		gui = new ServerGUI();
+		server = new Server();
+		gui = new ServerGUI(server);
+		server.setPort(gui.askForPortNumber());
+		gui.setVisible(true);
 	}
 }

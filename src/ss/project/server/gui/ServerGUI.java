@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,12 +29,64 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.plaf.FontUIResource;
 
+import ss.project.server.Server;
 import ss.project.server.ServerApplication;
 import ss.project.server.logging.TextAreaLogHandler;
 
-public class ServerGUI extends JFrame implements ActionListener {
+public class ServerGUI extends JFrame implements Observer {
 	private static final long serialVersionUID = -4411033752001988794L;
+	private ServerController controller;
+	class ServerController implements ActionListener {
+		private Server server;
+		public ServerController(Server s) {
+			server = s;
+			
+		}
 
+		public void actionPerformed(final ActionEvent e) {
+			String action = e.getActionCommand();
+			final int z = action.indexOf('.');
+			final String[] command = new String[2];
+			if (z == -1) {
+				command[0] = action;
+				command[1] = "";
+			} else {
+				command[0] = action.substring(0, z);
+				command[1] = action.substring(z + 1);
+			}
+			if (command[0].equals("Info")) {
+				if (command[1].equals("Info")) {
+					JOptionPane.showMessageDialog(ServerGUI.this, new String[] {
+							"University of Twente-Bachelor Computer Science",
+							"Software Systems Module Programming Project" },
+							"Info", JOptionPane.INFORMATION_MESSAGE);
+				}
+				if (command[1].equals("Authors")) {
+					JOptionPane.showMessageDialog(ServerGUI.this,
+							new String[] { "Group 14 - Ramon Onis, Tim Blok" },
+							"Info", JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
+			if (command[0].equals("Settings")) {
+				if (command[1].equals("Hide log")) {
+					textScroll.setVisible(!((JCheckBoxMenuItem) e.getSource())
+							.isSelected());
+					if ((getExtendedState() & Frame.MAXIMIZED_BOTH) != Frame.MAXIMIZED_BOTH) {
+						Dimension size = getSize();
+						log("size");
+						pack();
+						size.height += textScroll.getSize().height
+								* (((JCheckBoxMenuItem) e.getSource()).isSelected() ? -1
+										: 1);
+						setSize(size);
+					} else {
+						pack();
+						setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+					}
+				}
+			}
+		}
+	}
 	static {
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 	}
@@ -40,7 +94,8 @@ public class ServerGUI extends JFrame implements ActionListener {
 	private JToolBar toolBar;
 	private JScrollPane textScroll;
 
-	public ServerGUI() {
+	public ServerGUI(Server s) {
+		controller = new ServerController(s);
 		UIManager.put("ToolTip.font", new FontUIResource("SansSerif",
 				Font.BOLD, 22));
 		try {
@@ -56,9 +111,34 @@ public class ServerGUI extends JFrame implements ActionListener {
 		setMinimumSize(new Dimension(800, 600));
 		setLocationRelativeTo(getOwner());
 		setExtendedState(this.getExtendedState() | ServerGUI.MAXIMIZED_BOTH);
-		setVisible(true);
 		log = Logger.getLogger(ServerGUI.class.getName());
 		log("STARTUP SUCCESFULL");
+	}
+
+	public int askForPortNumber() {
+		int port = -1;
+		while (port == -1) {
+			String inputString = JOptionPane.showInputDialog(this,
+					"Enter a port number between 1100 and 65535: ",
+					"Port number", JOptionPane.QUESTION_MESSAGE);
+			try {
+				int inputInt = Integer.parseInt(inputString);
+				if (Server.portAvailable(inputInt)) {
+					port = inputInt;
+				} else {
+					JOptionPane
+							.showMessageDialog(
+									this,
+									"This port is invalid or not available.\nPlease enter an other port number.",
+									"Port invalid", JOptionPane.ERROR_MESSAGE);
+				}
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this,
+						"Please enter a valid number", "Number Invalid",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		}
+		return port;
 	}
 
 	public void log(String message) {
@@ -83,13 +163,13 @@ public class ServerGUI extends JFrame implements ActionListener {
 		if (command[0].equals("Info")) {
 			if (command[1].equals("Info")) {
 				JOptionPane.showMessageDialog(this, new String[] {
-					"University of Twente-Bachelor Computer Science",
-					"Software Systems Module Programming Project" },
-					"Info", JOptionPane.INFORMATION_MESSAGE);
+						"University of Twente-Bachelor Computer Science",
+						"Software Systems Module Programming Project" },
+						"Info", JOptionPane.INFORMATION_MESSAGE);
 			}
 			if (command[1].equals("Authors")) {
 				JOptionPane.showMessageDialog(this,
-						new String[] {"Group 14 - Ramon Onis, Tim Blok"},
+						new String[] { "Group 14 - Ramon Onis, Tim Blok" },
 						"Info", JOptionPane.INFORMATION_MESSAGE);
 			}
 		}
@@ -114,8 +194,9 @@ public class ServerGUI extends JFrame implements ActionListener {
 	}
 
 	private JMenuBar constructMenu() {
-		final String[] titles = new String[] {"Settings", "Info"};
-		final String[][] elements = new String[][] {{"$Hide log"}, {"Info", "Authors"}};
+		final String[] titles = new String[] { "Settings", "Info" };
+		final String[][] elements = new String[][] { { "$Hide log" },
+				{ "Info", "Authors" } };
 		final JMenuBar bar = new JMenuBar();
 		for (int i = 0; i < titles.length; i++) {
 			final String title = titles[i];
@@ -128,13 +209,13 @@ public class ServerGUI extends JFrame implements ActionListener {
 					if (e.startsWith("$")) {
 						JCheckBoxMenuItem jmi = new JCheckBoxMenuItem(
 								e.replace("$", ""));
-						jmi.addActionListener(this);
+						jmi.addActionListener(controller);
 						jmi.setActionCommand(title + "." + e.replace("$", ""));
 						menu.add(jmi);
 					} else {
 						JMenuItem jmi;
 						jmi = new JMenuItem(e);
-						jmi.addActionListener(this);
+						jmi.addActionListener(controller);
 						jmi.setActionCommand(title + "." + e);
 						menu.add(jmi);
 					}
@@ -145,6 +226,7 @@ public class ServerGUI extends JFrame implements ActionListener {
 		}
 		return bar;
 	}
+
 	private void initializeGUI() {
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		if (ServerApplication.runningFromJar) {
@@ -176,5 +258,11 @@ public class ServerGUI extends JFrame implements ActionListener {
 		textScroll.setVisible(true);
 		add(toolBar, BorderLayout.NORTH);
 		add(textScroll, BorderLayout.SOUTH);
+	}
+
+	@Override
+	public void update(Observable o, Object arg) {
+		// TODO Auto-generated method stub
+		
 	}
 }

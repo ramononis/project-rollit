@@ -1,4 +1,4 @@
-package ss.week7.cmdline;
+package ss.project.server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -6,24 +6,15 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.Scanner;
 
-/**
- * Peer for a simple client-server application
- * 
- * @author Theo Ruys
- * @version 2005.02.21
- */
-public class Peer implements Runnable {
+public class ServerPeer {
 	public static final String EXIT = "exit";
 
 	protected String name;
 	protected Socket sock;
 	protected BufferedReader in;
 	protected BufferedWriter out;
-	
-	private String stream;
-	protected Scanner sc;
+	private int minimumPlayers = 2;
 
 	/*
 	 * @ requires (nameArg != null) && (sockArg != null);
@@ -36,55 +27,13 @@ public class Peer implements Runnable {
 	 * @param sockArg
 	 *            Socket of the Peer-proces
 	 */
-	public Peer(String nameArg, Socket sockArg) throws IOException {
+	public ServerPeer(String nameArg, Socket sockArg) throws IOException {
 		this.name = nameArg;
 		this.sock = sockArg;
 		this.in = new BufferedReader(new InputStreamReader(
 					sockArg.getInputStream()));
 		this.out = new BufferedWriter(new OutputStreamWriter(
 				sockArg.getOutputStream()));
-	}
-
-	/**
-	 * Reads strings of the stream of the socket-connection and writes the
-	 * characters to the default output
-	 */
-	public void run() {
-		try {
-			while(true){
-			stream = in.readLine();
-			System.out.println(stream);
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Reads a string from the console and sends this string over the
-	 * socket-connection to the Peer proces. On Peer.EXIT the method ends
-	 */
-	public void handleTerminalInput() {
-		sc = new Scanner(System.in);
-		boolean exit = false;
-		while (sc.hasNextLine() && !exit) {
-			String line = sc.nextLine();
-			
-			if (line.equals("exit")) {
-				exit = true;
-				System.out.println("Shutting off...");
-			} else {
-				try {
-					System.out.println("Verstuur: " + line);
-					out.write(line + "\n");
-					out.flush();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
 	}
 
 	/**
@@ -121,5 +70,13 @@ public class Peer implements Runnable {
 		}
 
 		return (antw == null) ? "" : antw;
+	}
+
+	public int getMinimumPlayers() {
+		return minimumPlayers;
+	}
+
+	public void setMinimumPlayers(int minimumPlayers) {
+		this.minimumPlayers = minimumPlayers;
 	}
 }
