@@ -35,6 +35,12 @@ public class ClientApplication {
 						JOptionPane.ERROR_MESSAGE);
 			}
 		}
+//		int minimumPlayers = JOptionPane.showOptionDialog(gui,
+//				"Please select the minimal player amount.",
+//				"Minimal player amount.", JOptionPane.OK_OPTION,
+//				JOptionPane.QUESTION_MESSAGE, null, new Integer[] { 2, 3, 4 },
+//				2);
+//		client.setMinimumPlayers(minimumPlayers);
 		client.addObserver(gui);
 		gui.setVisible(true);
 	}

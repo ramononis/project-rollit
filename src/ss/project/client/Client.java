@@ -21,6 +21,7 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 	private BufferedWriter out;
 	private Game game;
 	private Mark myMark;
+	private int minimumPlayers = -1;
 
 	public Mark getMyMark() {
 		return myMark;
@@ -62,18 +63,36 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 
 	public void sendTurn(int i) {
 		try {
-
 			out.write(SEND_TURN + i + "\n");
 			out.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * @return the minimumPlayers
+	 */
+	public int getMinimumPlayers() {
+		return minimumPlayers;
+	}
+
+	/**
+	 * @param minimumPlayers
+	 *            the minimumPlayers to set
+	 */
+	public void setMinimumPlayers(int minimum) {
+		minimumPlayers = minimum;
+		try {
+			out.write(MINIMAL_PLAYERS + minimum + "\n");
+			out.flush();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}

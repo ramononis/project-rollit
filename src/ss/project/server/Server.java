@@ -29,6 +29,7 @@ public class Server extends Observable implements Runnable {
 			ds.setReuseAddress(true);
 			return true;
 		} catch (IOException e) {
+			
 		} finally {
 			if (ds != null) {
 				ds.close();
@@ -56,7 +57,7 @@ public class Server extends Observable implements Runnable {
 	public void setPort(int p) {
 		try {
 			serverSocket = new ServerSocket(p);
-			
+
 		} catch (IOException e) {
 			System.out.println("Dit is echt zo jammer!");
 		}
@@ -68,10 +69,20 @@ public class Server extends Observable implements Runnable {
 		setChanged();
 		notifyObservers(newPeer);
 		System.out.println("Peer no. " + peerCounter + " connected");
-		if (idlePeerList.size() >= 2) {
+		checkForNewGames();
+	}
+	public void checkForNewGames() {
+		
+		int readyPeerAmount = 0;
+		for (ServerPeer peer : idlePeerList) {
+			if(peer.isReady()) {
+				readyPeerAmount++;
+			}
+		}
+		if (readyPeerAmount >= 2) {
 			ArrayList<ServerPeer> gamePeers = new ArrayList<ServerPeer>();
 			for (ServerPeer peer : idlePeerList) {
-				if (peer.getMinimumPlayers() <= idlePeerList.size()) {
+				if (peer.getMinimumPlayers() <= readyPeerAmount && peer.isReady()) {
 					gamePeers.add(peer);
 				}
 			}
@@ -80,7 +91,6 @@ public class Server extends Observable implements Runnable {
 			}
 		}
 	}
-
 	public void startNewGame(ArrayList<ServerPeer> peers) {
 		for (ServerPeer peer : peers) {
 			idlePeerList.remove(peer);
@@ -98,8 +108,7 @@ public class Server extends Observable implements Runnable {
 			while (true) {
 				Socket socket = serverSocket.accept();
 				peerCounter++;
-				ServerGUI.log("[Client no. " + peerCounter
-						+ " has connected]");
+				ServerGUI.log("[Client no. " + peerCounter + " has connected]");
 				ServerPeer peer = new ServerPeer("peer" + peerCounter, socket);
 				addPeer(peer);
 			}

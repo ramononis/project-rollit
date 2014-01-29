@@ -37,9 +37,8 @@ public class ClientGUI extends JFrame implements ActionListener, Observer {
 		initializeGUI();
 		setTitle("Rollit Client");
 		setResizable(true);
-		setMinimumSize(new Dimension(800, 600));
-		setLocationRelativeTo(getOwner());
-		setExtendedState(this.getExtendedState() | ClientGUI.MAXIMIZED_BOTH);
+		setSize(new Dimension(500, 450));
+		//setExtendedState(this.getExtendedState() | ClientGUI.MAXIMIZED_BOTH);
 	}
 
 	public void actionPerformed(final ActionEvent e) {

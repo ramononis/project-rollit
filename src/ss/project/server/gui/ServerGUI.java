@@ -102,9 +102,8 @@ public class ServerGUI extends JFrame implements Observer {
 		initializeGUI();
 		setTitle("Rollit Server");
 		setResizable(true);
-		setMinimumSize(new Dimension(800, 600));
-		setLocationRelativeTo(getOwner());
-		setExtendedState(this.getExtendedState() | ServerGUI.MAXIMIZED_BOTH);
+		setSize(new Dimension(500, 600));
+		//setExtendedState(this.getExtendedState() | ClientGUI.MAXIMIZED_BOTH);
 		log = Logger.getLogger(ServerGUI.class.getName());
 		log("STARTUP SUCCESFULL");
 	}

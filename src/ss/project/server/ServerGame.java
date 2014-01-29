@@ -46,6 +46,5 @@ public class ServerGame extends Game {
 			peer.sendStart(peers.size(), mark);
 		}
 	}
-
 	private Map<Player, ServerPeer> peers = new HashMap<Player, ServerPeer>();
 }

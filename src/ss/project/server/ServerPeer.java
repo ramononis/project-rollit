@@ -10,13 +10,13 @@ import java.net.Socket;
 import ss.project.engine.Mark;
 import ss.project.gui.ProtocolConstants;
 
-public class ServerPeer implements Runnable, ProtocolConstants{
+public class ServerPeer implements Runnable, ProtocolConstants {
 	public static final String EXIT = "exit";
 	protected String name;
 	protected Socket sock;
 	protected BufferedReader in;
 	protected BufferedWriter out;
-	private int minimumPlayers = 2;
+	private int minimumPlayers = -1;
 	private ServerGame game;
 
 	/*
@@ -33,8 +33,7 @@ public class ServerPeer implements Runnable, ProtocolConstants{
 	public ServerPeer(String nameArg, Socket sockArg) throws IOException {
 		name = nameArg;
 		sock = sockArg;
-		in = new BufferedReader(new InputStreamReader(
-				sockArg.getInputStream()));
+		in = new BufferedReader(new InputStreamReader(sockArg.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(
 				sockArg.getOutputStream()));
 		new Thread(this).start();
@@ -64,7 +63,6 @@ public class ServerPeer implements Runnable, ProtocolConstants{
 		return name;
 	}
 
-
 	public int getMinimumPlayers() {
 		return minimumPlayers;
 	}
@@ -72,8 +70,9 @@ public class ServerPeer implements Runnable, ProtocolConstants{
 	public void setMinimumPlayers(int minimum) {
 		minimumPlayers = minimum;
 	}
+
 	public void sendStart(int n, Mark mark) {
-		
+
 		try {
 			out.write(START_GAME + n + mark.toString() + "\n");
 			out.flush();
@@ -82,6 +81,7 @@ public class ServerPeer implements Runnable, ProtocolConstants{
 			e.printStackTrace();
 		}
 	}
+
 	public void sendTurn(int i) {
 		try {
 			System.out.println(this);
@@ -117,10 +117,17 @@ public class ServerPeer implements Runnable, ProtocolConstants{
 				if (line.contains(SEND_TURN)) {
 					game.takeTurn(Integer.parseInt(line.replaceAll(SEND_TURN,
 							"")));
+				} else if (line.contains(MINIMAL_PLAYERS)) {
+					minimumPlayers = Integer.parseInt(line.replaceAll(
+							MINIMAL_PLAYERS, ""));
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public boolean isReady() {
+		return minimumPlayers != -1;
 	}
 }
