@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
 
+import ss.project.ProtocolConstants;
 import ss.project.engine.Mark;
-import ss.project.gui.ProtocolConstants;
 
 public class ServerPeer implements Runnable, ProtocolConstants {
 	public static final String EXIT = "exit";

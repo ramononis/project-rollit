@@ -10,10 +10,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Observable;
 
+import ss.project.ProtocolConstants;
 import ss.project.engine.Game;
 import ss.project.engine.Mark;
 import ss.project.engine.Player;
-import ss.project.gui.ProtocolConstants;
 
 public class Client extends Observable implements Runnable, ProtocolConstants {
 	private Socket socket;
