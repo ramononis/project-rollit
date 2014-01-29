@@ -18,6 +18,7 @@ public class ServerPeer implements Runnable, ProtocolConstants {
 	protected BufferedWriter out;
 	private int minimumPlayers = -1;
 	private ServerGame game;
+	private String clientName;
 
 	/*
 	 * @ requires (nameArg != null) && (sockArg != null);
@@ -70,6 +71,16 @@ public class ServerPeer implements Runnable, ProtocolConstants {
 	public void setMinimumPlayers(int minimum) {
 		minimumPlayers = minimum;
 	}
+	public void sendName(String n){
+		try {
+			out.write(JOIN_GAME + n);
+			out.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 
 	public void sendStart(int n, Mark mark) {
 
@@ -119,6 +130,11 @@ public class ServerPeer implements Runnable, ProtocolConstants {
 							"")));
 				}
 				
+				else if (line.contains(LOGIN_GAME)){
+					out.write("welcome");
+					out.flush();
+				}
+				
 				else if (line.contains(QUIT_GAME)){
 					//TODO: Quit the game, shutdown, etc.
 				}
@@ -137,6 +153,8 @@ public class ServerPeer implements Runnable, ProtocolConstants {
 				
 				else if (line.contains(JOIN_GAME)){
 					//TODO: join de game
+					name = line.replaceAll(JOIN_GAME, "");
+					System.out.println("contained name " + clientName);
 				}
 				
 				// else //if (line.contains(MINIMAL_PLAYERS)) {

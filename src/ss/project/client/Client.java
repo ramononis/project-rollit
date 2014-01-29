@@ -22,6 +22,8 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 	private Mark myMark;
 	private int minimumPlayers = -1;
 	private Player myPlayer;
+	private String name;
+	private int nrPlayers;
 
 	public Mark getMyMark() {
 		return myMark;
@@ -31,7 +33,9 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 		myMark = mark;
 	}
 
-	public Client(InetAddress addr, int port, Player player) throws IOException {
+	public Client(InetAddress addr, int port, Player player, String n, int nr) throws IOException {
+		nrPlayers = nr;
+		name = n;
 		socket = new Socket(addr, port);
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(
@@ -45,15 +49,24 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 		try {
 			while (true) {
 				String line = in.readLine();
-				System.out.print("bla");
+				System.out.println("ONTVANGEN!!!: " + line);
 				if (line.contains(START_GAME)) {
-					int n = Integer.parseInt(""
-							+ line.replaceAll(START_GAME, "").charAt(0));
-					myMark = Mark.fromString(line.replaceAll(START_GAME, "")
-							.substring(1));
+					String playerNames = line.replaceAll(START_GAME, "");
+					String[] playerNamesArray = playerNames.split(" ");
+					
+					int n = playerNamesArray.length;
+					if(playerNamesArray[0].equals(name)) {
+						setMyMark(Mark.RED);
+					} else if(playerNamesArray[1].equals(name)) {
+						setMyMark(Mark.GREEN);
+					} else if(playerNamesArray[2].equals(name)) {
+						setMyMark(Mark.BLUE);
+					} else if(playerNamesArray[3].equals(name)) {
+						setMyMark(Mark.YELLOW);
+					}
 					ArrayList<Player> players = new ArrayList<Player>();
 					for (int i = 0; i < n; i++) {
-						players.add(new Player("player " + (i + 1)));
+						players.add(new Player(playerNamesArray[i]));
 					}
 					game = new ClientGame(this, players, 8);
 					game.setMyPlayer(myPlayer);
@@ -61,8 +74,20 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 					notifyObservers(game);
 					
 				} 
-				else if (line.contains(UPDATE_TURN)){
+				
+				else if (line.contains(WELCOME)){
+					sendJoin();
+				}
+				
+				else if (line.contains(WELCOME)){
 					
+				}
+				else if (line.contains(UPDATE_GUI)){
+					String line2 = line.replaceAll(UPDATE_GUI, "");
+					String[] line2nstuff = line2.split(" ");
+					int x  = Integer.parseInt(line2nstuff[1]);
+					int y  = Integer.parseInt(line2nstuff[2]);
+					game.takeTurn(x, y);
 				}
 				
 				else if (line.contains(SEND_TURN)) {
@@ -78,8 +103,8 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 	public void sendTurn(int i) {
 		try {
 			int dim = game.getBoard().dim;
-			int x = i % dim;
-			int y = i / dim;
+			int x = i / dim;
+			int y = i % dim;
 			out.write(SEND_TURN + x + " " + y + "\n");
 			out.flush();
 		} catch (IOException e) {
@@ -99,6 +124,17 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 	 */
 	public int getMinimumPlayers() {
 		return minimumPlayers;
+	}
+	
+	public void sendJoin(){
+		try {
+			out.write(JOIN_GAME + nrPlayers + "\n");
+			System.out.println(JOIN_GAME + nrPlayers + "\n");
+			out.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -121,11 +157,26 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 	public Player getMyPlayer() {
 		return myPlayer;
 	}
+	
+	public void sendLogin(){
+		try {
+			out.write(LOGIN_GAME + name + "\n");
+			System.out.println(LOGIN_GAME + name);
+			out.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * @param myPlayer the myPlayer to set
 	 */
 	public void setMyPlayer(Player myPlayer) {
 		this.myPlayer = myPlayer;
+	}
+	
+	public String getName(){
+		return this.name;
 	}
 }

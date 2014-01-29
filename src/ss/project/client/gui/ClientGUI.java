@@ -179,4 +179,22 @@ public class ClientGUI extends JFrame implements ActionListener, Observer {
 			}
 		}
 	}
+	
+	public int askForPlayers(){
+		int minimumPlayers = JOptionPane.showOptionDialog(this,
+				"Please select the minimal player amount.",
+				 "Minimal player amount.", JOptionPane.OK_OPTION,
+				 JOptionPane.QUESTION_MESSAGE, null, new Integer[] { 2, 3, 4 },
+				 2);
+		return minimumPlayers + 2;
+	}
+
+	public String askForName() {
+		// TODO Auto-generated method stub
+		String name = "";
+		while (name.equals("")){
+			name = JOptionPane.showInputDialog(this, "Enter a name: ", "Name", JOptionPane.QUESTION_MESSAGE);
+		}
+		return name;
+	}
 }

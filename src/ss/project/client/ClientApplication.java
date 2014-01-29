@@ -19,7 +19,7 @@ public class ClientApplication {
 	private static ClientGUI gui;
 	private static Client client;
 	public static boolean runningFromJar = false;
-
+	
 	public static void main(String[] args) throws IOException {
 
 		final URL resource = ClientApplication.class
@@ -31,7 +31,9 @@ public class ClientApplication {
 		client = null;
 		int port = -1;
 		InetAddress address;
+		String name;
 		Player player = null;
+		int nrPlayers = 2;
 		int ai = JOptionPane.showOptionDialog(gui, "Choose your player type",
 				"Player type", JOptionPane.OK_OPTION,
 				JOptionPane.QUESTION_MESSAGE, null, new String[] { "Dumb",
@@ -57,7 +59,11 @@ public class ClientApplication {
 			try {
 				address = gui.askForIP();
 				port = gui.askForPortNumber();
-				client = new Client(address, port, player);
+				name = gui.askForName();
+				nrPlayers = gui.askForPlayers();
+				client = new Client(address, port, player, name, nrPlayers);
+				client.sendLogin();
+				System.out.println("CLIENTAPP");
 			} catch (IOException e) {
 				JOptionPane.showMessageDialog(gui,
 						"Could not establish a connection.\nPlease try again.",
@@ -65,12 +71,9 @@ public class ClientApplication {
 						JOptionPane.ERROR_MESSAGE);
 			}
 		}
-		// int minimumPlayers = JOptionPane.showOptionDialog(gui,
-		// "Please select the minimal player amount.",
-		// "Minimal player amount.", JOptionPane.OK_OPTION,
-		// JOptionPane.QUESTION_MESSAGE, null, new Integer[] { 2, 3, 4 },
-		// 2);
-		// client.setMinimumPlayers(minimumPlayers);
+		
+		
+
 
 		client.addObserver(gui);
 		gui.setVisible(true);
