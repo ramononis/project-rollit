@@ -14,7 +14,7 @@ public class SmartAi implements Ai {
 
 	@Override
 	public int determineMove(Game g) {
-		//JOptionPane.showMessageDialog(null, "trol");
+		JOptionPane.showMessageDialog(null, "trol");
 		Board b = g.getBoard();
 		int turn = firstOutSideMidRegion(g.deepCopy());
 		if (onlyInMidRegion(b.deepCopy())) {
