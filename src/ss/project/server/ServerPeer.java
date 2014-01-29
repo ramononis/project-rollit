@@ -117,10 +117,10 @@ public class ServerPeer implements Runnable, ProtocolConstants {
 				if (line.contains(SEND_TURN)) {
 					game.takeTurn(Integer.parseInt(line.replaceAll(SEND_TURN,
 							"")));
-				} else if (line.contains(MINIMAL_PLAYERS)) {
-					minimumPlayers = Integer.parseInt(line.replaceAll(
-							MINIMAL_PLAYERS, ""));
-				}
+				}// else //if (line.contains(MINIMAL_PLAYERS)) {
+					//minimumPlayers = Integer.parseInt(line.replaceAll(
+				//			MINIMAL_PLAYERS, ""));
+				//}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -128,6 +128,6 @@ public class ServerPeer implements Runnable, ProtocolConstants {
 	}
 
 	public boolean isReady() {
-		return minimumPlayers != -1;
+		return true; //minimumPlayers != -1;
 	}
 }

@@ -24,4 +24,7 @@ public class ClientGame extends Game {
 			client.sendTurn(i);
 		}
 	}
+	public void setMyPlayer(Player player) {
+		getPlayers().put(client.getMyMark(), player);
+	}
 }

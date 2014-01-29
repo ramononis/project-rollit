@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Observable;
 
 import ss.project.ProtocolConstants;
-import ss.project.engine.Game;
 import ss.project.engine.Mark;
 import ss.project.engine.Player;
 
@@ -19,9 +18,10 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 	private Socket socket;
 	private BufferedReader in;
 	private BufferedWriter out;
-	private Game game;
+	private ClientGame game;
 	private Mark myMark;
 	private int minimumPlayers = -1;
+	private Player myPlayer;
 
 	public Mark getMyMark() {
 		return myMark;
@@ -31,11 +31,12 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 		myMark = mark;
 	}
 
-	public Client(InetAddress addr, int port) throws IOException {
+	public Client(InetAddress addr, int port, Player player) throws IOException {
 		socket = new Socket(addr, port);
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(
 				socket.getOutputStream()));
+		setMyPlayer(player);
 		new Thread(this).start();
 	}
 
@@ -55,6 +56,7 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 						players.add(new Player("player " + (i + 1)));
 					}
 					game = new ClientGame(this, players, 8);
+					game.setMyPlayer(myPlayer);
 					setChanged();
 					notifyObservers(game);
 				} else if (line.contains(SEND_TURN)) {
@@ -90,10 +92,24 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 	public void setMinimumPlayers(int minimum) {
 		minimumPlayers = minimum;
 		try {
-			out.write(MINIMAL_PLAYERS + minimum + "\n");
+			//out.write(MINIMAL_PLAYERS + minimum + "\n");
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * @return the myPlayer
+	 */
+	public Player getMyPlayer() {
+		return myPlayer;
+	}
+
+	/**
+	 * @param myPlayer the myPlayer to set
+	 */
+	public void setMyPlayer(Player myPlayer) {
+		this.myPlayer = myPlayer;
 	}
 }
