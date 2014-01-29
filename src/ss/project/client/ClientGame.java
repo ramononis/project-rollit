@@ -19,11 +19,15 @@ public class ClientGame extends Game {
 
 	@Override
 	public void takeTurn(int i) {
-		if (isValidMove(i)) {
-			super.takeTurn(i);
-			client.sendTurn(i);
-		}
+		super.takeTurn(i);
+		client.sendTurn(i);
 	}
+
+	public void takeTurn(int r, int c){
+		takeTurn(r * getBoard().dim + c);
+	}
+
+
 	public void setMyPlayer(Player player) {
 		getPlayers().put(client.getMyMark(), player);
 	}

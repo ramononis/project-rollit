@@ -117,7 +117,29 @@ public class ServerPeer implements Runnable, ProtocolConstants {
 				if (line.contains(SEND_TURN)) {
 					game.takeTurn(Integer.parseInt(line.replaceAll(SEND_TURN,
 							"")));
-				}// else //if (line.contains(MINIMAL_PLAYERS)) {
+				}
+				
+				else if (line.contains(QUIT_GAME)){
+					//TODO: Quit the game, shutdown, etc.
+				}
+				
+				else if (line.contains(GET_SCORES)){
+					//TODO: Show highscores
+				}
+				
+				else if (line.contains(LOG_OUT)){
+					//TODO: Log out
+				}
+				
+				else if (line.contains(CHAT_MESSAGE)){
+					//TODO: stuur de message door naar de server
+				}
+				
+				else if (line.contains(JOIN_GAME)){
+					//TODO: join de game
+				}
+				
+				// else //if (line.contains(MINIMAL_PLAYERS)) {
 					//minimumPlayers = Integer.parseInt(line.replaceAll(
 				//			MINIMAL_PLAYERS, ""));
 				//}

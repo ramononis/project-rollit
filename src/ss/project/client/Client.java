@@ -59,7 +59,13 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 					game.setMyPlayer(myPlayer);
 					setChanged();
 					notifyObservers(game);
-				} else if (line.contains(SEND_TURN)) {
+					
+				} 
+				else if (line.contains(UPDATE_TURN)){
+					
+				}
+				
+				else if (line.contains(SEND_TURN)) {
 					game.takeTurn(Integer.parseInt(line.replaceAll(SEND_TURN,
 							"")));
 				}
@@ -71,11 +77,21 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 
 	public void sendTurn(int i) {
 		try {
-			out.write(SEND_TURN + i + "\n");
+			int dim = game.getBoard().dim;
+			int x = i % dim;
+			int y = i / dim;
+			out.write(SEND_TURN + x + " " + y + "\n");
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void sendTurn(int r, int c){
+		sendTurn(r * game.getBoard().dim + c);
+	}
+	
+	public void move(int i){
 	}
 
 	/**

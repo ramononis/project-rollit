@@ -111,22 +111,22 @@ public class Game extends Observable {
 			board.setField(i, current);
 			takeOverBlockedFields(i);
 			switch (players.size()) {
-				case 2:
-					if (current.equals(Mark.GREEN)) {
-						current = Mark.RED;
-					} else {
-						current = current.next();
-					}
-					break;
-				case 3:
-					if (current.equals(Mark.BLUE)) {
-						current = Mark.RED;
-					} else {
-						current = current.next();
-					}
-					break;
-				case 4:
+			case 2:
+				if (current.equals(Mark.GREEN)) {
+					current = Mark.RED;
+				} else {
 					current = current.next();
+				}
+				break;
+			case 3:
+				if (current.equals(Mark.BLUE)) {
+					current = Mark.RED;
+				} else {
+					current = current.next();
+				}
+				break;
+			case 4:
+				current = current.next();
 			}
 			if (!isCopy && !board.gameOver()) {
 				players.get(current).requestMove(this);
@@ -274,6 +274,10 @@ public class Game extends Observable {
 			}
 		}
 		return isValid;
+	}
+
+	public boolean isValidMove(int r, int c) {
+		return isValidMove(r * board.dim + c);
 	}
 
 	public Mark getWinner() {
