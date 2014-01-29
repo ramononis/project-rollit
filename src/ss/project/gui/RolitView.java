@@ -15,6 +15,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
+import ss.project.ai.SmartAi;
+import ss.project.engine.ComputerPlayer;
 import ss.project.engine.Game;
 import ss.project.engine.HumanPlayer;
 import ss.project.engine.Mark;
@@ -42,7 +44,6 @@ public class RolitView extends Container implements Observer {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			System.out.print("bla");
 			for (int i = 0; i < game.getBoard().dim * game.getBoard().dim; i++) {
 				if (boardButtons[i].equals(e.getSource())) {
 					game.takeTurn(i);
@@ -96,10 +97,9 @@ public class RolitView extends Container implements Observer {
 		Game game = new Game(8);
 		RolitView view = new RolitView(game);
 		game.addObserver(view);
-		view.players.add(new HumanPlayer("Ramon"));
-		view.players.add(new HumanPlayer("Ramon"));
-		view.players.add(new HumanPlayer("Ramon"));
-		view.players.add(new HumanPlayer("Ramon"));
+		view.players.add(new HumanPlayer("Ramon!"));
+		view.players.add(new ComputerPlayer(new SmartAi()));
+		view.usersMark = Mark.RED;
 		game.reset(view.players);
 		scorePanel = new ScorePanel(game);
 		game.addObserver(scorePanel);
@@ -107,6 +107,7 @@ public class RolitView extends Container implements Observer {
 		game.start();
 		JFrame frame = new JFrame();
 		frame.add(view);
+		frame.setSize(400, 400);
 		frame.setVisible(true);
 	}
 

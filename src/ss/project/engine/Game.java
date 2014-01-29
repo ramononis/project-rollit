@@ -111,22 +111,22 @@ public class Game extends Observable {
 			board.setField(i, current);
 			takeOverBlockedFields(i);
 			switch (players.size()) {
-			case 2:
-				if (current.equals(Mark.GREEN)) {
-					current = Mark.RED;
-				} else {
+				case 2:
+					if (current.equals(Mark.GREEN)) {
+						current = Mark.RED;
+					} else {
+						current = current.next();
+					}
+					break;
+				case 3:
+					if (current.equals(Mark.BLUE)) {
+						current = Mark.RED;
+					} else {
+						current = current.next();
+					}
+					break;
+				case 4:
 					current = current.next();
-				}
-				break;
-			case 3:
-				if (current.equals(Mark.BLUE)) {
-					current = Mark.RED;
-				} else {
-					current = current.next();
-				}
-				break;
-			case 4:
-				current = current.next();
 			}
 			if (!isCopy && !board.gameOver()) {
 				players.get(current).requestMove(this);
@@ -265,7 +265,7 @@ public class Game extends Observable {
 	 */
 	public boolean isValidMove(int i) {
 		boolean isValid = false;
-		if (board.isEmptyField(i) && board.isField(i)
+		if (board.isField(i) && board.isEmptyField(i)
 				&& isAdjacentToNonEmptyField(i)) {
 			if (canBlock(i)) {
 				isValid = true;
@@ -274,10 +274,6 @@ public class Game extends Observable {
 			}
 		}
 		return isValid;
-	}
-
-	public boolean isValidMove(int r, int c) {
-		return isValidMove(r * board.dim + c);
 	}
 
 	public Mark getWinner() {
@@ -299,6 +295,7 @@ public class Game extends Observable {
 		game.reset(new ArrayList<Player>(players.values()));
 		game.board = board.deepCopy();
 		game.current = current;
+		game.isCopy = true;
 		return game;
 	}
 
