@@ -14,13 +14,17 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import ss.project.ai.SmartAi;
+import ss.project.client.ClientGame;
 import ss.project.engine.ComputerPlayer;
 import ss.project.engine.Game;
 import ss.project.engine.HumanPlayer;
 import ss.project.engine.Mark;
 import ss.project.engine.Player;
+import ss.project.exceptions.IllegalMoveException;
+import ss.project.server.ServerGame;
 
 public class RolitView extends Container implements Observer {
 	// CONSTANTS
@@ -46,12 +50,32 @@ public class RolitView extends Container implements Observer {
 		public void actionPerformed(ActionEvent e) {
 			for (int i = 0; i < game.getBoard().dim * game.getBoard().dim; i++) {
 				if (boardButtons[i].equals(e.getSource())) {
-					game.takeTurn(i);
+					try {
+						game.takeTurn(i);
+					} catch (IllegalMoveException e1) {
+						//Buttons only get pushed at client-side.
+						if(game instanceof ClientGame) {
+							ClientGame cGame = (ClientGame) game;
+							JOptionPane.showMessageDialog(null,
+									"The controller has parsed an illegal move.\n"
+											+ "The client will shut down.",
+									"Recieved illegal move", JOptionPane.ERROR_MESSAGE);
+							cGame.getClient().shutDown();
+						}
+					}
 				}
 			}
 			if (button.equals(e.getSource())) {
-				game.reset(players);
-				game.start();
+				if (game instanceof ServerGame) {
+					getParent().remove(RolitView.this);
+				} else if (game instanceof ClientGame) {
+					ClientGame cGame = (ClientGame) game;
+					cGame.getClient().sendJoin();
+					button.setEnabled(false);
+				} else {
+					game.reset(players);
+					game.start();
+				}
 			}
 		}
 	}
@@ -76,7 +100,8 @@ public class RolitView extends Container implements Observer {
 	private void init(Game g) {
 		boardButtons = new JButton[g.getBoard().dim * g.getBoard().dim];
 		label = new JLabel("Its RED's turn");
-		button = new JButton("Another game?");
+		button = new JButton(g instanceof ServerGame ? "Close"
+				: "Another game?");
 		Container board = new Container();
 		GridLayout boardLayout = new GridLayout(g.getBoard().dim,
 				g.getBoard().dim);

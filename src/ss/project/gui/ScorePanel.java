@@ -1,7 +1,7 @@
 package ss.project.gui;
 
 import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.Font;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -32,7 +32,7 @@ public class ScorePanel extends JPanel implements Observer {
 
 		public void setName(String n) {
 			name = n;
-			colorLabel.setText(name);
+			colorLabel.setText(" " + name + " ");
 		}
 
 		public ScorePanelItem(Color c, int s, String n) {
@@ -46,9 +46,10 @@ public class ScorePanel extends JPanel implements Observer {
 			BoxLayout layout = new BoxLayout(this, BoxLayout.X_AXIS);
 			setLayout(layout);
 			colorLabel = new JLabel();
-			colorLabel.setPreferredSize(new Dimension(20, 10));
 			colorLabel.setOpaque(true);
+			colorLabel.setFont(new Font(colorLabel.getFont().getName(), Font.PLAIN, 30));
 			scoreLabel = new JLabel();
+			scoreLabel.setFont(new Font(scoreLabel.getFont().getName(), Font.PLAIN, 30));
 			add(colorLabel);
 			add(scoreLabel);
 		}
@@ -68,7 +69,7 @@ public class ScorePanel extends JPanel implements Observer {
 
 		public void setScore(int s) {
 			score = s;
-			scoreLabel.setText("   " + score + "   ");
+			scoreLabel.setText(" " + score + " ");
 		}
 	}
 

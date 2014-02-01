@@ -6,6 +6,7 @@ import java.util.Random;
 import ss.project.engine.Board;
 import ss.project.engine.Game;
 import ss.project.engine.Mark;
+import ss.project.exceptions.IllegalMoveException;
 
 public class DumbAi implements Ai {
 	private String name = "Dumb ai";
@@ -20,7 +21,11 @@ public class DumbAi implements Ai {
 			Game copy = game.deepCopy();
 			copy.isCopy = true;
 			if (copy.isValidMove(i)) {
-				copy.takeTurn(i);
+				try {
+					copy.takeTurn(i);
+				} catch (IllegalMoveException e) {
+					//impossible. should not be catched
+				}
 				if (copy.getBoard().getScore(mark) > maxScore) {
 					maxMoves.clear();
 					maxMoves.add(i);
@@ -30,11 +35,7 @@ public class DumbAi implements Ai {
 				}
 			}
 		}
-		int move = -1;
-		if (!maxMoves.isEmpty()) {
-			move = new Random().nextInt(maxMoves.size());
-		}
-		return maxMoves.get(move);
+		return maxMoves.get(new Random().nextInt(maxMoves.size()));
 	}
 
 	@Override

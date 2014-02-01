@@ -18,11 +18,7 @@ public class NaiveAi implements Ai {
 				possMoves.add(i);
 			}
 		}
-		int move = -1;
-		if (!possMoves.isEmpty()) {
-			move = new Random().nextInt(possMoves.size());
-		}
-		return possMoves.get(move);
+		return possMoves.get(new Random().nextInt(possMoves.size()));
 	}
 
 	@Override
@@ -35,5 +31,4 @@ public class NaiveAi implements Ai {
 			name = n;
 		}
 	}
-
 }

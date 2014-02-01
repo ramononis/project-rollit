@@ -1,7 +1,6 @@
 package ss.project;
 
 public interface ProtocolConstants {
-	public static final String SEND_TURN = "move ";
 	public static final String START_GAME = "newGame ";
 	public static final String LOGIN_GAME = "login ";
 	public static final String JOIN_GAME = "join ";
@@ -17,4 +16,5 @@ public interface ProtocolConstants {
 	public static final String LOG_OUT = "logOut ";
 	public static final String PREF_PLAYERS = "join ";
 	public static final String WELCOME = "welcome";
+	public static final String KICK = "kick ";
 }

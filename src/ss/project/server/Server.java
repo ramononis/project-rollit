@@ -7,9 +7,10 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Observable;
 
+import ss.project.ProtocolConstants;
 import ss.project.server.gui.ServerGUI;
 
-public class Server extends Observable implements Runnable {
+public class Server extends Observable implements Runnable, ProtocolConstants {
 	/**
 	 * Checks to see if a specific port is available.
 	 * 
@@ -29,7 +30,6 @@ public class Server extends Observable implements Runnable {
 			ds.setReuseAddress(true);
 			return true;
 		} catch (IOException e) {
-			
 		} finally {
 			if (ds != null) {
 				ds.close();
@@ -39,7 +39,6 @@ public class Server extends Observable implements Runnable {
 				try {
 					ss.close();
 				} catch (IOException e) {
-					/* should not be thrown */
 				}
 			}
 		}
@@ -65,40 +64,51 @@ public class Server extends Observable implements Runnable {
 	}
 
 	public void addPeer(ServerPeer newPeer) {
-		idlePeerList.add(newPeer);
-		setChanged();
-		notifyObservers(newPeer);
-		System.out.println("Peer no. " + peerCounter + " connected");
-		checkForNewGames();
+		if (!idlePeerList.contains(newPeer)) {
+			idlePeerList.add(newPeer);
+			setChanged();
+			notifyObservers(newPeer);
+			checkForNewGames();
+		}
 	}
+
 	public void checkForNewGames() {
-		
+
 		int readyPeerAmount = 0;
 		for (ServerPeer peer : idlePeerList) {
-			if(peer.isReady()) {
+			if (peer.isReady()) {
 				readyPeerAmount++;
 			}
 		}
 		if (readyPeerAmount >= 2) {
 			ArrayList<ServerPeer> gamePeers = new ArrayList<ServerPeer>();
-			for (ServerPeer peer : idlePeerList) {
-				if (peer.getMinimumPlayers() <= readyPeerAmount && peer.isReady()) {
-					gamePeers.add(peer);
+
+			for (int i = 4; i >= 2 && gamePeers.isEmpty(); i--) {
+				for (ServerPeer peer : idlePeerList) {
+					if (peer.getMinimumPlayers() <= i && peer.isReady()) {
+						gamePeers.add(peer);
+					}
+				}
+				if (gamePeers.size() < i) {
+					gamePeers.clear();
 				}
 			}
-			if (gamePeers.size() >= 2) {
+			if (!gamePeers.isEmpty()) {
 				startNewGame(gamePeers);
 			}
 		}
 	}
+
 	public void startNewGame(ArrayList<ServerPeer> peers) {
+		
 		for (ServerPeer peer : peers) {
 			idlePeerList.remove(peer);
 		}
-		ServerGUI.log("Game no. " + gameList.size() + " started");
+		ServerGUI.log("Game no. " + (gameList.size() + 1) + " started");
 		ServerGame game = new ServerGame(peers);
 		gameList.add(game);
 		setChanged();
+
 		notifyObservers(game);
 	}
 
@@ -109,11 +119,11 @@ public class Server extends Observable implements Runnable {
 				Socket socket = serverSocket.accept();
 				peerCounter++;
 				ServerGUI.log("[Client no. " + peerCounter + " has connected]");
-				ServerPeer peer = new ServerPeer("peer" + peerCounter, socket);
+				ServerPeer peer = new ServerPeer(this, "peer" + peerCounter,
+						socket);
 				addPeer(peer);
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

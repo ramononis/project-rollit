@@ -1,9 +1,7 @@
 package ss.project.ai;
-
-import javax.swing.JOptionPane;
-
 import ss.project.engine.Board;
 import ss.project.engine.Game;
+import ss.project.exceptions.IllegalMoveException;
 
 public class SmartAi implements Ai {
 	private String name = "Smart ai";
@@ -14,26 +12,25 @@ public class SmartAi implements Ai {
 
 	@Override
 	public int determineMove(Game g) {
-		JOptionPane.showMessageDialog(null, "trol");
 		Board b = g.getBoard();
-		int turn = firstOutSideMidRegion(g.deepCopy());
+		int turn = smartMove(g.deepCopy());
 		if (onlyInMidRegion(b.deepCopy())) {
 			log("Only in mid region");
 			if (canStayInMidRegion(g.deepCopy()) != -1) {
 				log("Can stay here");
 				turn = canStayInMidRegion(g.deepCopy());
 			} else {
-				turn = firstOutSideMidRegion(g.deepCopy());
+				turn = smartMove(g.deepCopy());
 			}
-		} else if (canGetCorner(g.deepCopy()) != -1) {
-			turn = canGetCorner(g.deepCopy());
-		} else if (getSafeOuterRing(g.deepCopy()) != -1) {
-			turn = getSafeOuterRing(g.deepCopy());
+		} else if (canGetCorner(g.deepCopy())) {
+			turn = cornerMove(g.deepCopy());
+		} else if (canGetSafeOuterRingMove(g.deepCopy())) {
+			turn = safeOuterRingMove(g.deepCopy());
 		}
 		return turn;
 	}
 
-	private int getSafeOuterRing(Game game) {
+	private int safeOuterRingMove(Game game) {
 		Board board = game.getBoard();
 		int dim = board.dim;
 		int move = -1;
@@ -46,29 +43,10 @@ public class SmartAi implements Ai {
 		return move;
 	}
 
-	private int firstOuterRingMove(Game game) {
-		Board board = game.getBoard();
-		int dim = board.dim;
-		int move = firstOutSideMidRegion(game);
-		for (int i = 0; i < dim * dim; i++) {
-			if (game.isValidMove(i) && isOnOuterRing(i, dim)
-					&& !isNextToCorner(i, dim)) {
-				move = i;
-			}
-		}
-		return move;
+	private boolean canGetSafeOuterRingMove(Game game) {
+		return safeOuterRingMove(game) != -1;
 	}
-
-	private boolean outerRingEmpty(Board board) {
-		boolean foundOuterField = false;
-		for (int i = 0; i < board.dim * board.dim; i++) {
-			if (isOnOuterRing(i, board.dim) && !board.isEmptyField(i)) {
-				foundOuterField = true;
-			}
-		}
-		return !foundOuterField;
-	}
-
+	
 	public boolean isNextToCorner(int i, int dim) {
 		
 		int x = i % dim;
@@ -94,7 +72,7 @@ public class SmartAi implements Ai {
 		return dy == 0 || dx == 0;
 	}
 
-	public int firstOutSideMidRegion(Game game) {
+	public int smartMove(Game game) {
 		Board board = game.getBoard();
 		int dim = board.dim;
 		int move = -1;
@@ -102,7 +80,11 @@ public class SmartAi implements Ai {
 			if (game.isValidMove(i) && !isNextToCorner(i, dim)) {
 				boolean foundGoodMove = false;
 				Game copy = game.deepCopy();
-				copy.takeTurn(i);
+				try {
+					copy.takeTurn(i);
+				} catch (IllegalMoveException e) {
+					//impossible, should not be catched.
+				}
 				for (int j = 0; j < dim * dim && !foundGoodMove; j++) {
 					if (copy.isValidMove(j) && isOnOuterRing(i, dim) && !isNextToCorner(i, dim)) {
 						foundGoodMove = true;
@@ -118,7 +100,11 @@ public class SmartAi implements Ai {
 				if (game.isValidMove(i) && !diagNextToCorner(i, dim)) {
 					boolean foundGoodMove = false;
 					Game copy = game.deepCopy();
-					copy.takeTurn(i);
+					try {
+						copy.takeTurn(i);
+					} catch (IllegalMoveException e) {
+						//impossible, should not be catched.
+					}
 					for (int j = 0; j < dim * dim && !foundGoodMove; j++) {
 						if (copy.isValidMove(j) && isCorner(j, dim)) {
 							foundGoodMove = true;
@@ -135,7 +121,11 @@ public class SmartAi implements Ai {
 				if (game.isValidMove(i)) {
 					boolean foundGoodMove = false;
 					Game copy = game.deepCopy();
-					copy.takeTurn(i);
+					try {
+						copy.takeTurn(i);
+					} catch (IllegalMoveException e) {
+						//impossible, should not be catched.
+					}
 					for (int j = 0; j < dim * dim && !foundGoodMove; j++) {
 						if (copy.isValidMove(j) && isCorner(j, dim)) {
 							foundGoodMove = true;
@@ -162,7 +152,7 @@ public class SmartAi implements Ai {
 		return !isCorner(i, dim) && dy == 1 && dx == 1;
 	}
 
-	public int canGetCorner(Game game) {
+	public int cornerMove(Game game) {
 		Board board = game.getBoard();
 		int corner = -1;
 		if (game.isValidMove(0)) {
@@ -177,6 +167,10 @@ public class SmartAi implements Ai {
 		return corner;
 	}
 
+	public boolean canGetCorner(Game game) {
+		return cornerMove(game) != -1;
+	}
+	
 	public boolean isFieldInMidRegion(int x, int y) {
 		return !(x < 2 || x > 5 || y < 2 || y > 5);
 	}

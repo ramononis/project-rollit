@@ -9,6 +9,9 @@ import java.net.Socket;
 
 import ss.project.ProtocolConstants;
 import ss.project.engine.Mark;
+import ss.project.engine.Player;
+import ss.project.exceptions.IllegalMoveException;
+import ss.project.server.gui.ServerGUI;
 
 public class ServerPeer implements Runnable, ProtocolConstants {
 	public static final String EXIT = "exit";
@@ -18,7 +21,8 @@ public class ServerPeer implements Runnable, ProtocolConstants {
 	protected BufferedWriter out;
 	private int minimumPlayers = -1;
 	private ServerGame game;
-	private String clientName;
+	private Server server;
+	private boolean isDisconnected = false;
 
 	/*
 	 * @ requires (nameArg != null) && (sockArg != null);
@@ -31,29 +35,42 @@ public class ServerPeer implements Runnable, ProtocolConstants {
 	 * @param sockArg
 	 *            Socket of the Peer-proces
 	 */
-	public ServerPeer(String nameArg, Socket sockArg) throws IOException {
+	public ServerPeer(Server svr, String nameArg, Socket sockArg)
+			throws IOException {
 		name = nameArg;
 		sock = sockArg;
+		server = svr;
 		in = new BufferedReader(new InputStreamReader(sockArg.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(
 				sockArg.getOutputStream()));
 		new Thread(this).start();
 	}
 
+	private void sendWelcome() {
+		if (!isDisconnected) {
+			try {
+				out.write(WELCOME + '\n');
+				out.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	/**
 	 * Closes the connection, the sockets will be terminated.
 	 */
 	public void shutDown() {
-		try {
+		if (!isDisconnected) {
+			try {
+				in.close();
+				out.close();
+				sock.close();
+				System.out.println("Exited.");
 
-			in.close();
-			out.close();
-			sock.close();
-			System.out.println("Exited.");
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -71,36 +88,51 @@ public class ServerPeer implements Runnable, ProtocolConstants {
 	public void setMinimumPlayers(int minimum) {
 		minimumPlayers = minimum;
 	}
-	public void sendName(String n){
-		try {
-			out.write(JOIN_GAME + n);
-			out.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+	public void sendName(String n) {
+		if (!isDisconnected) {
+			try {
+				out.write(JOIN_GAME + n);
+				out.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		
 	}
 
-	public void sendStart(int n, Mark mark) {
+	public void sendStart() {
 
-		try {
-			out.write(START_GAME + n + mark.toString() + "\n");
-			out.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (!isDisconnected) {
+			try {
+				String line = START_GAME.replaceAll(" ", "");
+				Player player = null;
+				Mark mark = Mark.RED;
+				boolean end = false;
+				while ((player = game.getPlayers().get(mark)) != null && !end) {
+					line += " " + player.getName();
+					mark = mark.next();
+					if (mark == Mark.RED) {
+						end = true;
+					}
+				}
+				out.write(line + '\n');
+				out.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	public void sendTurn(int i) {
-		try {
-			System.out.println(this);
-			out.write(SEND_TURN + i + "\n");
-			out.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (!isDisconnected) {
+			int dim = game.getBoard().dim;
+			try {
+				out.write(UPDATE_GUI + name + " " + (i / dim) + " " + (i % dim)
+						+ "\n");
+				out.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -124,50 +156,49 @@ public class ServerPeer implements Runnable, ProtocolConstants {
 		try {
 			while (true) {
 				String line = in.readLine();
-				System.out.print(line);
-				if (line.contains(SEND_TURN)) {
-					game.takeTurn(Integer.parseInt(line.replaceAll(SEND_TURN,
-							"")));
+				ServerGUI.log("[" + name + "] " + line);
+				if (line.contains(LOGIN_GAME)) {
+					name = line.replaceAll(LOGIN_GAME, "");
+					sendWelcome();
+				} else if (line.contains(JOIN_GAME)) {
+					minimumPlayers = Integer.parseInt(line.replaceAll(
+							JOIN_GAME, ""));
+					server.addPeer(this);
+					server.checkForNewGames();
+				} else if (line.contains(UPDATE_GUI)) {
+					String line2 = line.replaceAll(UPDATE_GUI, "");
+					String[] line2nstuff = line2.split(" ");
+					int x = Integer.parseInt(line2nstuff[1]);
+					int y = Integer.parseInt(line2nstuff[2]);
+					game.takeTurn(x, y);
 				}
-				
-				else if (line.contains(LOGIN_GAME)){
-					out.write("welcome");
-					out.flush();
-				}
-				
-				else if (line.contains(QUIT_GAME)){
-					//TODO: Quit the game, shutdown, etc.
-				}
-				
-				else if (line.contains(GET_SCORES)){
-					//TODO: Show highscores
-				}
-				
-				else if (line.contains(LOG_OUT)){
-					//TODO: Log out
-				}
-				
-				else if (line.contains(CHAT_MESSAGE)){
-					//TODO: stuur de message door naar de server
-				}
-				
-				else if (line.contains(JOIN_GAME)){
-					//TODO: join de game
-					name = line.replaceAll(JOIN_GAME, "");
-					System.out.println("contained name " + clientName);
-				}
-				
-				// else //if (line.contains(MINIMAL_PLAYERS)) {
-					//minimumPlayers = Integer.parseInt(line.replaceAll(
-				//			MINIMAL_PLAYERS, ""));
-				//}
 			}
+		} catch (IOException e) {
+			isDisconnected = true;
+			game.takeAiTurnIfDisconnected();
+		} catch (IllegalMoveException e) {
+			ServerGUI.logError("[" + name + "] recieved illegal move");
+			kick("illegal move");
+		}
+		isDisconnected = true;
+		game.takeAiTurnIfDisconnected();
+		ServerGUI.log("[" + name + "] disconnected");
+	}
+
+	public void kick(String message) {
+		try {
+			out.write(KICK + message + "\n");
+			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public boolean isReady() {
-		return true; //minimumPlayers != -1;
+		return minimumPlayers != -1;
+	}
+
+	public boolean isDisconnected() {
+		return isDisconnected;
 	}
 }

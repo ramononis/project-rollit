@@ -2,9 +2,6 @@ package ss.project.client.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.InetAddress;
@@ -12,103 +9,26 @@ import java.net.UnknownHostException;
 import java.util.Observable;
 import java.util.Observer;
 
-import javax.swing.Box;
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
-import javax.swing.JSeparator;
-import javax.swing.JToolBar;
 
 import ss.project.client.Client;
-import ss.project.client.ClientApplication;
 import ss.project.engine.Game;
 import ss.project.gui.RolitView;
 import ss.project.gui.ScorePanel;
 
-public class ClientGUI extends JFrame implements ActionListener, Observer {
+public class ClientGUI extends JFrame implements Observer {
 	private static final long serialVersionUID = -4411033752001988794L;
-
-	private JToolBar toolBar;
 
 	public ClientGUI() {
 		initializeGUI();
 		setTitle("Rollit Client");
 		setResizable(true);
 		setSize(new Dimension(500, 450));
-		//setExtendedState(this.getExtendedState() | ClientGUI.MAXIMIZED_BOTH);
-	}
-
-	public void actionPerformed(final ActionEvent e) {
-		String action = e.getActionCommand();
-		final int z = action.indexOf('.');
-		final String[] command = new String[2];
-		if (z == -1) {
-			command[0] = action;
-			command[1] = "";
-		} else {
-			command[0] = action.substring(0, z);
-			command[1] = action.substring(z + 1);
-		}
-		if (command[0].equals("Info")) {
-			if (command[1].equals("Info")) {
-				JOptionPane.showMessageDialog(this, new String[] {
-						"University of Twente-Bachelor Computer Science",
-						"Software Systems Module Programming Project" },
-						"Info", JOptionPane.INFORMATION_MESSAGE);
-			}
-			if (command[1].equals("Authors")) {
-				JOptionPane.showMessageDialog(this,
-						new String[] { "Group 14 - Ramon Onis, Tim Blok" },
-						"Info", JOptionPane.INFORMATION_MESSAGE);
-			}
-		}
-		if (command[0].equals("Settings")) {
-		}
-	}
-
-	private JMenuBar constructMenu() {
-		final String[] titles = new String[] { "Settings", "Info", "Je moeder" };
-		final String[][] elements = new String[][] { {}, { "Info", "Authors" },
-				{ "dus" } };
-		final JMenuBar bar = new JMenuBar();
-		for (int i = 0; i < titles.length; i++) {
-			final String title = titles[i];
-			final JMenu menu = new JMenu(title);
-			final String[] elems = elements[i];
-			for (String e : elems) {
-				if (e.equals("-")) {
-					menu.add(new JSeparator());
-				} else {
-					if (e.startsWith("$")) {
-						JCheckBoxMenuItem jmi = new JCheckBoxMenuItem(
-								e.replace("$", ""));
-						jmi.addActionListener(this);
-						jmi.setActionCommand(title + "." + e.replace("$", ""));
-						menu.add(jmi);
-					} else {
-						JMenuItem jmi;
-						jmi = new JMenuItem(e);
-						jmi.addActionListener(this);
-						jmi.setActionCommand(title + "." + e);
-						menu.add(jmi);
-					}
-				}
-
-			}
-			bar.add(menu);
-		}
-		return bar;
 	}
 
 	private void initializeGUI() {
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		if (ClientApplication.runningFromJar) {
-			setIconImage(Toolkit.getDefaultToolkit().getImage(
-					getClass().getResource("/resources/images/ICON.PNG")));
-		}
 		addWindowListener(new WindowAdapter() {
 			public void windowClosing(final WindowEvent e) {
 				int close = JOptionPane.showConfirmDialog(ClientGUI.this,
@@ -121,12 +41,6 @@ public class ClientGUI extends JFrame implements ActionListener, Observer {
 				return;
 			}
 		});
-		final JMenuBar bar = constructMenu();
-		setJMenuBar(bar);
-		toolBar = new JToolBar();
-		toolBar.setFloatable(false);
-		toolBar.add(Box.createHorizontalGlue());
-		add(toolBar, BorderLayout.NORTH);
 	}
 
 	public InetAddress askForIP() {
@@ -168,32 +82,33 @@ public class ClientGUI extends JFrame implements ActionListener, Observer {
 		if (o instanceof Client) {
 			Client client = (Client) o;
 			if (arg instanceof Game) {
+				getContentPane().removeAll();
 				Game game = (Game) arg;
 				RolitView gameView = new RolitView(game, client.getMyMark());
 				game.addObserver(gameView);
 				ScorePanel scorePanel = new ScorePanel(game);
 				game.addObserver(scorePanel);
 				gameView.add(scorePanel);
-				add(gameView, BorderLayout.CENTER);
+				getContentPane().add(gameView, BorderLayout.CENTER);
 				game.start();
 			}
 		}
 	}
-	
-	public int askForPlayers(){
+
+	public int askForPlayers() {
 		int minimumPlayers = JOptionPane.showOptionDialog(this,
 				"Please select the minimal player amount.",
-				 "Minimal player amount.", JOptionPane.OK_OPTION,
-				 JOptionPane.QUESTION_MESSAGE, null, new Integer[] { 2, 3, 4 },
-				 2);
+				"Minimal player amount.", JOptionPane.OK_OPTION,
+				JOptionPane.QUESTION_MESSAGE, null, new Integer[] { 2, 3, 4 },
+				2);
 		return minimumPlayers + 2;
 	}
 
 	public String askForName() {
-		// TODO Auto-generated method stub
 		String name = "";
-		while (name.equals("")){
-			name = JOptionPane.showInputDialog(this, "Enter a name: ", "Name", JOptionPane.QUESTION_MESSAGE);
+		while (name.equals("")) {
+			name = JOptionPane.showInputDialog(this, "Enter a name: ", "Name",
+					JOptionPane.QUESTION_MESSAGE);
 		}
 		return name;
 	}

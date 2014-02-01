@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Observable;
 
+import ss.project.exceptions.IllegalMoveException;
+
 /**
  * Class for maintaining the Rolit game. Programming project Module 2 Based on
  * the Tic Tac Toe game by Theo Ruys en Arend Rensink.
@@ -105,35 +107,39 @@ public class Game extends Observable {
 	 * @param i
 	 *            the index of the field where to place the mark
 	 */
-	public void takeTurn(int i) {
-
-		if (isValidMove(i)) {
-			board.setField(i, current);
-			takeOverBlockedFields(i);
-			switch (players.size()) {
-				case 2:
-					if (current.equals(Mark.GREEN)) {
-						current = Mark.RED;
-					} else {
-						current = current.next();
-					}
-					break;
-				case 3:
-					if (current.equals(Mark.BLUE)) {
-						current = Mark.RED;
-					} else {
-						current = current.next();
-					}
-					break;
-				case 4:
-					current = current.next();
-			}
-			if (!isCopy && !board.gameOver()) {
-				players.get(current).requestMove(this);
-			}
-			setChanged();
-			notifyObservers();
+	public void takeTurn(int i) throws IllegalMoveException {
+		if (!isValidMove(i)) {
+			throw new IllegalMoveException("Invalid move: " + i);
 		}
+		board.setField(i, current);
+		takeOverBlockedFields(i);
+		switch (players.size()) {
+		case 2:
+			if (current.equals(Mark.GREEN)) {
+				current = Mark.RED;
+			} else {
+				current = current.next();
+			}
+			break;
+		case 3:
+			if (current.equals(Mark.BLUE)) {
+				current = Mark.RED;
+			} else {
+				current = current.next();
+			}
+			break;
+		case 4:
+			current = current.next();
+		}
+		if (!isCopy && !board.gameOver()) {
+			players.get(current).requestMove(this);
+		}
+		setChanged();
+		notifyObservers();
+	}
+
+	public void takeTurn(int r, int c) throws IllegalMoveException {
+		takeTurn(c + r * board.dim);
 	}
 
 	public void takeOverBlockedFields(int i) {

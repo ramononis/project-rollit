@@ -6,6 +6,7 @@ import java.util.Random;
 import ss.project.engine.Board;
 import ss.project.engine.Game;
 import ss.project.engine.Mark;
+import ss.project.exceptions.IllegalMoveException;
 
 public class SuicideAi implements Ai {
 	private String name = "Suicide ai";
@@ -20,7 +21,11 @@ public class SuicideAi implements Ai {
 			Game copy = game.deepCopy();
 			copy.isCopy = true;
 			if (copy.isValidMove(i)) {
-				copy.takeTurn(i);
+				try {
+					copy.takeTurn(i);
+				} catch (IllegalMoveException e) {
+					//impossible, should not be catched.
+				}
 				if (copy.getBoard().getScore(mark) < minScore) {
 					minMoves.clear();
 					minMoves.add(i);
