@@ -13,9 +13,9 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import ss.project.client.Client;
-import ss.project.engine.Game;
 import ss.project.gui.RolitView;
 import ss.project.gui.ScorePanel;
+import ss.project.model.Game;
 
 public class ClientGUI extends JFrame implements Observer {
 	private static final long serialVersionUID = -4411033752001988794L;

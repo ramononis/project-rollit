@@ -2,9 +2,9 @@ package ss.project.client;
 
 import java.util.ArrayList;
 
-import ss.project.engine.Game;
-import ss.project.engine.Mark;
-import ss.project.engine.Player;
+import ss.project.model.Game;
+import ss.project.model.Mark;
+import ss.project.model.Player;
 import ss.project.exceptions.IllegalMoveException;
 
 public class ClientGame extends Game {
@@ -33,7 +33,7 @@ public class ClientGame extends Game {
 	}
 
 	public void takeTurn(int r, int c) throws IllegalMoveException {
-		takeTurn(r * getBoard().dim + c);
+		takeTurn(r * getBoard().getDimension() + c);
 	}
 
 	public void setMyPlayer(Player player) {

@@ -18,10 +18,10 @@ import ss.project.ai.NaiveAi;
 import ss.project.ai.SmartAi;
 import ss.project.ai.SuicideAi;
 import ss.project.client.gui.ClientGUI;
-import ss.project.engine.ComputerPlayer;
-import ss.project.engine.HumanPlayer;
-import ss.project.engine.Mark;
-import ss.project.engine.Player;
+import ss.project.model.ComputerPlayer;
+import ss.project.model.HumanPlayer;
+import ss.project.model.Mark;
+import ss.project.model.Player;
 import ss.project.exceptions.IllegalMoveException;
 
 public class Client extends Observable implements Runnable, ProtocolConstants {
@@ -172,7 +172,7 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 
 	public void sendTurn(int i) {
 		try {
-			int dim = game.getBoard().dim;
+			int dim = game.getBoard().getDimension();
 			out.write(UPDATE_GUI + name + " " + (i / dim) + " " + (i % dim)
 					+ "\n");
 			out.flush();
@@ -182,7 +182,7 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 	}
 
 	public void sendTurn(int r, int c) {
-		sendTurn(r * game.getBoard().dim + c);
+		sendTurn(r * game.getBoard().getDimension() + c);
 	}
 
 	public void move(int i) {
@@ -207,7 +207,7 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 	}
 
 	/**
-	 * @return the myPlayer
+	 *@return the myPlayer
 	 */
 	public Player getMyPlayer() {
 		return myPlayer;
@@ -224,7 +224,7 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 	}
 
 	/**
-	 * @param myPlayer
+	 *@param myPlayer
 	 *            the myPlayer to set
 	 */
 	public void setMyPlayer(Player player) {
@@ -236,14 +236,14 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 	}
 	
 	/**
-	 * @return the minimalPlayers
+	 *@return the minimalPlayers
 	 */
 	public int getMinimalPlayers() {
 		return minimalPlayers;
 	}
 
 	/**
-	 * @param minimalPlayers the minimalPlayers to set
+	 *@param minimalPlayers the minimalPlayers to set
 	 */
 	public void setMinimalPlayers(int minimalPlayers) {
 		this.minimalPlayers = minimalPlayers;

@@ -1,4 +1,4 @@
-package ss.project.engine;
+package ss.project.model;
 
 public class Player {
 	private String name = "";

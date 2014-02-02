@@ -14,10 +14,10 @@ public class Server extends Observable implements Runnable, ProtocolConstants {
 	/**
 	 * Checks to see if a specific port is available.
 	 * 
-	 * @param port
+	 *@param port
 	 *            the port to check for availability
 	 */
-	public static boolean portAvailable(int port) {
+	/*@ pure */ public static boolean portAvailable(int port) {
 		if (port < 1100 || port > 65535) {
 			return false;
 		}
@@ -45,27 +45,59 @@ public class Server extends Observable implements Runnable, ProtocolConstants {
 		return false;
 	}
 
+	/**
+	 * A list of all the games that have been started.
+	 */
+	//@ private invariant gameList != null;
 	private ArrayList<ServerGame> gameList = new ArrayList<ServerGame>();
+
+	/**
+	 * A list of all the connected peers that arn't in a game.
+	 */
+	//@ private invariant idlePeerList != null;
 	private ArrayList<ServerPeer> idlePeerList = new ArrayList<ServerPeer>();
+	/**
+	 * Counts how many peers have connected.
+	 */
+	//@ private invariant peerCounter >= 0 && peerCounter >= idlePeerList.size();
 	private int peerCounter = 0;
+	/**
+	 * The servers server socket.
+	 */
 	private ServerSocket serverSocket;
 
+	/**
+	 * Makes a new server. Doesn't actually do anything. A socket won't be made
+	 * until a port has been set.
+	 */
 	public Server() {
 	}
 
-	public int getPort() {
-		return serverSocket.getLocalPort();
+	/**
+	 * Returns the port of the server socket.
+	 */
+	/*@ pure */ public int getPort() {
+		return serverSocket == null ? -1 : serverSocket.getLocalPort();
 	}
-	public void setPort(int p) {
-		try {
-			serverSocket = new ServerSocket(p);
 
-		} catch (IOException e) {
-			System.out.println("Dit is echt zo jammer!");
-		}
+	/**
+	 * Makes a new ServerSocket using <code>p</code> as port.
+	 * 
+	 *@param p
+	 *            the port to which the server listens.
+	 *@throws IOException
+	 *             if the port is already in use
+	 */
+	//@ ensures portAvailable(p) ==> getPort() == p;
+	public void setPort(int p) throws IOException {
+		serverSocket = new ServerSocket(p);
 		new Thread(this).start();
 	}
 
+	/**
+	 * Adds <code>newPeer</code> to idlePeerList if it doesn't already contain
+	 * <code>newPeer</code>. Calls checkForNewGames().
+	 */
 	public void addPeer(ServerPeer newPeer) {
 		if (!idlePeerList.contains(newPeer)) {
 			idlePeerList.add(newPeer);
@@ -74,17 +106,28 @@ public class Server extends Observable implements Runnable, ProtocolConstants {
 			checkForNewGames();
 		}
 	}
-	public boolean nameFree(String s) {
+
+	/**
+	 * Checks if this name is already in use.
+	 * 
+	 *@param s
+	 *            the name to check
+	 */
+	/*@ pure */ public boolean nameFree(String s) {
 		boolean foundMatch = false;
-		for(ServerPeer peer : idlePeerList) {
-			if(peer.getName().equals(s)) {
+		for (ServerPeer peer : idlePeerList) {
+			if (peer.getName().equals(s)) {
 				foundMatch = true;
 			}
 		}
 		return !foundMatch;
 	}
-	public void checkForNewGames() {
 
+	/**
+	 * Checks if a new game can be started while respecting the minimal player
+	 * amount of the idle peers.
+	 */
+	public void checkForNewGames() {
 		int readyPeerAmount = 0;
 		for (ServerPeer peer : idlePeerList) {
 			if (peer.isReady()) {
@@ -93,7 +136,6 @@ public class Server extends Observable implements Runnable, ProtocolConstants {
 		}
 		if (readyPeerAmount >= 2) {
 			ArrayList<ServerPeer> gamePeers = new ArrayList<ServerPeer>();
-
 			for (int i = 4; i >= 2 && gamePeers.isEmpty(); i--) {
 				for (ServerPeer peer : idlePeerList) {
 					if (peer.getMinimumPlayers() <= i && peer.isReady()) {
@@ -109,9 +151,12 @@ public class Server extends Observable implements Runnable, ProtocolConstants {
 			}
 		}
 	}
-
+	/**
+	 * Starts a new ServerGame with <code>peers</code>.
+	 *@param peers the list of server peers the game will have.
+	 */
 	public void startNewGame(ArrayList<ServerPeer> peers) {
-		
+
 		for (ServerPeer peer : peers) {
 			idlePeerList.remove(peer);
 		}
@@ -123,6 +168,9 @@ public class Server extends Observable implements Runnable, ProtocolConstants {
 		game.start();
 	}
 
+	/**
+	 * Accepts all new connections.
+	 */
 	@Override
 	public void run() {
 		try {

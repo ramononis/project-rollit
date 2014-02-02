@@ -1,7 +1,6 @@
 package ss.project.test;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
@@ -9,8 +8,8 @@ import java.util.Random;
 import javax.swing.JOptionPane;
 
 import ss.project.client.Client;
-import ss.project.engine.Game;
-import ss.project.engine.Player;
+import ss.project.model.Game;
+import ss.project.model.Player;
 import ss.project.server.Server;
 
 public class MinimalPlayerAmountTest implements Observer {

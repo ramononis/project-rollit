@@ -1,4 +1,4 @@
-package ss.project.engine;
+package ss.project.model;
 
 public class HumanPlayer extends Player {
 	public HumanPlayer(String n) {

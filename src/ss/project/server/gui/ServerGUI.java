@@ -14,7 +14,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 
-import ss.project.engine.Mark;
+import ss.project.model.Mark;
 import ss.project.gui.RolitView;
 import ss.project.gui.ScorePanel;
 import ss.project.server.Server;
@@ -25,6 +25,7 @@ public class ServerGUI extends JFrame implements Observer {
 	private static final long serialVersionUID = -4411033752001988794L;
 	private JTabbedPane tabbedPane;
 	private static Logger log;
+	private int gameAmount = 0;
 	private static boolean enableGUI;
 	private JScrollPane textScroll;
 
@@ -118,20 +119,20 @@ public class ServerGUI extends JFrame implements Observer {
 				ScorePanel scorePanel = new ScorePanel(game);
 				game.addObserver(scorePanel);
 				gameView.add(scorePanel);
-				tabbedPane.add(game.getName(), gameView);
+				tabbedPane.add("Game " + (++gameAmount), gameView);
 			}
 		}
 	}
 
 	/**
-	 * @return the enableGUI
+	 *@return the enableGUI
 	 */
 	public static boolean isGUIEnabled() {
 		return enableGUI;
 	}
 
 	/**
-	 * @param enableGUI
+	 *@param enableGUI
 	 *            the enableGUI to set
 	 */
 	public static void setGUIEnabled(boolean enableGUI) {

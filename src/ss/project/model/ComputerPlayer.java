@@ -1,4 +1,4 @@
-package ss.project.engine;
+package ss.project.model;
 
 import ss.project.ai.Ai;
 import ss.project.ai.NaiveAi;
@@ -18,7 +18,7 @@ public class ComputerPlayer extends Player {
 			try {
 				g.takeTurn(new NaiveAi().determineMove(g));
 			} catch (IllegalMoveException e1) {
-				//should not be catched. NaiveAi always takes an legal move.
+				//should not be caught. NaiveAi always takes an legal move.
 			}
 		}
 	}

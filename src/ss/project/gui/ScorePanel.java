@@ -12,8 +12,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import ss.project.engine.Game;
-import ss.project.engine.Mark;
+import ss.project.model.Game;
+import ss.project.model.Mark;
 
 public class ScorePanel extends JPanel implements Observer {
 	private static final long serialVersionUID = 7155579531691129608L;

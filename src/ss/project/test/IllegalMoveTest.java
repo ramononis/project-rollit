@@ -7,10 +7,10 @@ import javax.swing.JOptionPane;
 import ss.project.ai.NaiveAi;
 import ss.project.client.Client;
 import ss.project.client.ClientGame;
-import ss.project.engine.Board;
-import ss.project.engine.ComputerPlayer;
-import ss.project.engine.Game;
-import ss.project.engine.Player;
+import ss.project.model.Board;
+import ss.project.model.ComputerPlayer;
+import ss.project.model.Game;
+import ss.project.model.Player;
 import ss.project.server.Server;
 
 public class IllegalMoveTest {
@@ -32,7 +32,7 @@ public class IllegalMoveTest {
 				@Override
 				public void requestMove(Game g) {
 					Board b = g.getBoard();
-					int dim = b.dim;
+					int dim = b.getDimension();
 					int move = -1;
 					for (int i = 0; i < dim * dim && move == -1; i++) {
 						if (!g.isValidMove(i)) {

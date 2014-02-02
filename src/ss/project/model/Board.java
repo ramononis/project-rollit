@@ -1,18 +1,23 @@
-package ss.project.engine;
+package ss.project.model;
 
 /**
- * Game board for the Rolit game. Module 2 programming project.
- * Based on the Tic Tac Toe game board by Theo Ruys en Arend Rensink.
+ * Game board for the Rolit game. Module 2 programming project. Based on the Tic
+ * Tac Toe game board by Theo Ruys en Arend Rensink.
  * 
- * @author Ramon Onis & Tim Blok
+ *@author Ramon Onis & Tim Blok
  */
 public class Board {
 
 	// -- Instance variables -----------------------------------------
 
-	public int dim;
+	private int dim;
+
+	/*@ pure */ public int getDimension() {
+		return dim;
+	}
+
 	/*
-	 * @ private invariant fields.length == dim*dim; invariant (\forall int i; 0
+	 *@ private invariant fields.length == dim*dim; invariant (\forall int i; 0
 	 * <= i & i < dim*dim; getField(i) == Mark.EMPTY || getField(i) == Mark.XX
 	 * || getField(i) == Mark.OO);
 	 */
@@ -25,7 +30,7 @@ public class Board {
 	// -- Constructors -----------------------------------------------
 
 	/*
-	 * @ ensures (\forall int i; 0 <= i & i < dim * dim; this.getField(i) ==
+	 *@ ensures (\forall int i; 0 <= i & i < dim * dim; this.getField(i) ==
 	 * Mark.EMPTY) && dim == 8;
 	 */
 	/**
@@ -36,7 +41,7 @@ public class Board {
 	}
 
 	/*
-	 * @ ensures (\forall int i; 0 <= i & i < dim * dim; this.getField(i) ==
+	 *@ ensures (\forall int i; 0 <= i & i < dim * dim; this.getField(i) ==
 	 * Mark.EMPTY);
 	 */
 	/**
@@ -51,7 +56,7 @@ public class Board {
 	// -- Queries ----------------------------------------------------
 
 	/*
-	 * @ ensures \result != this; ensures (\forall int i; 0 <= i & i < dim *
+	 *@ ensures \result != this; ensures (\forall int i; 0 <= i & i < dim *
 	 * dim; \result.getField(i) == this.getField(i));
 	 */
 	/**
@@ -66,120 +71,119 @@ public class Board {
 	}
 
 	/*
-	 * @ requires 0 <= row & row < dim; requires 0 <= col & col < dim;
+	 *@ requires 0 <= row & row < dim; requires 0 <= col & col < dim;
 	 */
 	/**
 	 * Calculates the index in the linear array of fields from a (row, col)
 	 * pair.
 	 * 
-	 * @return the index belonging to the (row,col)-field
+	 *@return the index belonging to the (row,col)-field
 	 */
 	public int index(int row, int col) {
 		return dim * row + col;
 	}
 
 	/*
-	 * @ ensures \result == (0 <= ix && ix < dim * dim);
+	 *@ ensures \result == (0 <= ix && ix < dim * dim);
 	 */
 	/**
 	 * Returns true if <code>ix</code> is a valid index of a field on tbe board.
 	 * 
-	 * @return <code>true</code> if <code>0 <= ix < dim*dim</code>
+	 *@return <code>true</code> if <code>0 <= ix < dim*dim</code>
 	 */
-	/* @pure */
-	public boolean isField(int ix) {
+	/*@pure */ public boolean isField(int ix) {
 		return (0 <= ix) && (ix < dim * dim);
 	}
 
 	/*
-	 * @ ensures \result == (0 <= row && row < dim && 0 <= col && col < dim);
+	 *@ ensures \result == (0 <= row && row < dim && 0 <= col && col < dim);
 	 */
 	/**
 	 * Returns true of the (row,col) pair refers to a valid field on the board.
 	 * 
-	 * @return true if <code>0 <= row < dim && 0 <= col < dim</code>
+	 *@return true if <code>0 <= row < dim && 0 <= col < dim</code>
 	 */
-	/* @pure */
+	/*@pure */
 	public boolean isField(int row, int col) {
 		return (0 <= row) && (row < dim) && (0 <= col) && (col < dim);
 	}
 
 	/*
-	 * @ requires this.isField(i); ensures \result == Mark.EMPTY || \result ==
+	 *@ requires this.isField(i); ensures \result == Mark.EMPTY || \result ==
 	 * Mark.XX || \result == Mark.OO;
 	 */
 	/**
 	 * Returns the content of the field <code>i</code>.
 	 * 
-	 * @param i
+	 *@param i
 	 *            the number of the field (see NUMBERING)
-	 * @return the mark on the field
+	 *@return the mark on the field
 	 */
-	public Mark getField(int i) {
+	/*@ pure */ public Mark getField(int i) {
 		return fields[i];
 	}
 
 	/*
-	 * @ requires this.isField(row,col); ensures \result == Mark.EMPTY ||
+	 *@ requires this.isField(row,col); ensures \result == Mark.EMPTY ||
 	 * \result == Mark.XX || \result == Mark.OO;
 	 */
 
 	/**
 	 * Returns the content of the field referred to by the (row,col) pair.
 	 * 
-	 * @param row
+	 *@param row
 	 *            the row of the field
-	 * @param col
+	 *@param col
 	 *            the column of the field
-	 * @return the mark on the field
+	 *@return the mark on the field
 	 */
-	public Mark getField(int row, int col) {
+	/*@ pure */ public Mark getField(int row, int col) {
 		return fields[index(row, col)];
 	}
 
 	/*
-	 * @ requires this.isField(i); ensures \result == (this.getField(i) ==
+	 *@ requires this.isField(i); ensures \result == (this.getField(i) ==
 	 * Mark.EMPTY);
 	 */
 	/**
 	 * Returns true if the field <code>i</code> is empty.
 	 * 
-	 * @param i
+	 *@param i
 	 *            the index of the field (see NUMBERING)
-	 * @return true if the field is empty
+	 *@return true if the field is empty
 	 */
-	public boolean isEmptyField(int i) {
+	/*@ pure */ public boolean isEmptyField(int i) {
 		return getField(i) == Mark.EMPTY;
 	}
 
 	/*
-	 * @ requires this.isField(row,col); ensures \result ==
+	 *@ requires this.isField(row,col); ensures \result ==
 	 * (this.getField(row,col) == Mark.EMPTY);
 	 */
 	/**
 	 * Returns true if the field referred to by the (row,col) pair it empty.
 	 * 
-	 * @param row
+	 *@param row
 	 *            the row of the field
-	 * @param col
+	 *@param col
 	 *            the column of the field
-	 * @return true if the field is empty
+	 *@return true if the field is empty
 	 */
-	/* @pure */
+	/*@pure */
 	public boolean isEmptyField(int row, int col) {
 		return isEmptyField(index(row, col));
 	}
 
 	/*
-	 * @ ensures \result == (\forall int i; i <= 0 & i < dim * dim;
+	 *@ ensures \result == (\forall int i; i <= 0 & i < dim * dim;
 	 * this.getField(i) != Mark.EMPTY);
 	 */
 	/**
 	 * Tests if the whole board is full.
 	 * 
-	 * @return true if all fields are occupied
+	 *@return true if all fields are occupied
 	 */
-	/* @pure */
+	/*@pure */
 	public boolean isFull() {
 		boolean result = true;
 		for (int i = 0; i < fields.length; i++) {
@@ -191,34 +195,33 @@ public class Board {
 	}
 
 	/*
-	 * @ ensures \result == this.isFull() || this.hasWinner();
+	 *@ ensures \result == this.isFull() || this.hasWinner();
 	 */
 	/**
 	 * Returns true if the game is over. The game is over when there is a winner
 	 * or the whole board is full.
 	 * 
-	 * @return true if the game is over
+	 *@return true if the game is over
 	 */
-	/* @pure */
+	/*@pure */
 	public boolean gameOver() {
 		return isFull();
 	}
 
 	/*
-	 * @ requires m == Mark.XX | m == Mark.OO; ensures \result == this.hasRow(m)
+	 *@ requires m == Mark.XX | m == Mark.OO; ensures \result == this.hasRow(m)
 	 * || this.hasColumn(m) | this.hasDiagonal(m);
 	 */
 	/**
 	 * Checks if the mark <code>m</code> has won. A mark wins if it controls the
 	 * most fields,
 	 * 
-	 * @param m
+	 *@param m
 	 *            the mark of interest
-	 * @return <code>true</code> if the mark has won
+	 *@return <code>true</code> if the mark has won
 	 */
-	/* @pure */
-	public boolean isWinner(Mark m) {
-		int[] scores = new int[] {getScore(Mark.RED), getScore(Mark.GREEN),
+	/*@pure */ public boolean isWinner(Mark m) {
+		int[] scores = new int[] { getScore(Mark.RED), getScore(Mark.GREEN),
 				getScore(Mark.BLUE), getScore(Mark.YELLOW) };
 		int maxCount = 0;
 		int maxScore = -1;
@@ -238,8 +241,8 @@ public class Board {
 	 * Iterates over the fields and counts the amount of fields that belongs to
 	 * <code>m</code>.
 	 * 
-	 * @param m
-	 * @return the
+	 *@param m
+	 *@return the
 	 */
 	public int getScore(Mark m) {
 		int counter = 0;
@@ -253,15 +256,15 @@ public class Board {
 	}
 
 	/*
-	 * @ ensures \result == isWinner(Mark.XX) | \result == isWinner(Mark.OO);
+	 *@ ensures \result == isWinner(Mark.XX) | \result == isWinner(Mark.OO);
 	 */
 	/**
 	 * Returns true if the game has a winner. This is the case when one of the
 	 * marks controls at least one row, column or diagonal.
 	 * 
-	 * @return true if the board has a winner.
+	 *@return true if the board has a winner.
 	 */
-	/* @pure */
+	/*@pure */
 	public boolean hasWinner() {
 		return isWinner(Mark.RED) || isWinner(Mark.GREEN)
 				|| isWinner(Mark.BLUE) || isWinner(Mark.YELLOW);
@@ -270,7 +273,7 @@ public class Board {
 	// -- Commands ---------------------------------------------------
 
 	/*
-	 * @ ensures (\forall int i; 0 <= i & i < dim * dim; this.getField(i) ==
+	 *@ ensures (\forall int i; 0 <= i & i < dim * dim; this.getField(i) ==
 	 * Mark.EMPTY);
 	 */
 	/**
@@ -288,14 +291,14 @@ public class Board {
 	}
 
 	/*
-	 * @ requires this.isField(i); ensures this.getField(i) == m;
+	 *@ requires this.isField(i); ensures this.getField(i) == m;
 	 */
 	/**
 	 * Sets the content of field <code>i</code> to the mark <code>m</code>.
 	 * 
-	 * @param i
+	 *@param i
 	 *            the field number (see NUMBERING)
-	 * @param m
+	 *@param m
 	 *            the mark to be placed
 	 */
 	public void setField(int i, Mark m) {
@@ -303,17 +306,17 @@ public class Board {
 	}
 
 	/*
-	 * @ requires this.isField(row,col); ensures this.getField(row,col) == m;
+	 *@ requires this.isField(row,col); ensures this.getField(row,col) == m;
 	 */
 	/**
 	 * Sets the content of the field represented by the (row,col) pair to the
 	 * mark <code>m</code>.
 	 * 
-	 * @param row
+	 *@param row
 	 *            the field's row
-	 * @param col
+	 *@param col
 	 *            the field's column
-	 * @param m
+	 *@param m
 	 *            the mark to be placed
 	 */
 	public void setField(int row, int col, Mark m) {

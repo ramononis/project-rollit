@@ -1,6 +1,6 @@
 package ss.project.ai;
 
-import ss.project.engine.Game;
+import ss.project.model.Game;
 
 public interface Ai {
 	public int determineMove(Game game);

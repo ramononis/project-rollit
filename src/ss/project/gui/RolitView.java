@@ -18,11 +18,11 @@ import javax.swing.JOptionPane;
 
 import ss.project.ai.SmartAi;
 import ss.project.client.ClientGame;
-import ss.project.engine.ComputerPlayer;
-import ss.project.engine.Game;
-import ss.project.engine.HumanPlayer;
-import ss.project.engine.Mark;
-import ss.project.engine.Player;
+import ss.project.model.ComputerPlayer;
+import ss.project.model.Game;
+import ss.project.model.HumanPlayer;
+import ss.project.model.Mark;
+import ss.project.model.Player;
 import ss.project.exceptions.IllegalMoveException;
 import ss.project.server.ServerGame;
 
@@ -40,7 +40,7 @@ public class RolitView extends Container implements Observer {
 
 		public RolitController(Game g) {
 			game = g;
-			for (int i = 0; i < game.getBoard().dim * game.getBoard().dim; i++) {
+			for (int i = 0; i < game.getBoard().getDimension() * game.getBoard().getDimension(); i++) {
 				boardButtons[i].addActionListener(this);
 			}
 			button.addActionListener(this);
@@ -48,7 +48,7 @@ public class RolitView extends Container implements Observer {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			for (int i = 0; i < game.getBoard().dim * game.getBoard().dim; i++) {
+			for (int i = 0; i < game.getBoard().getDimension() * game.getBoard().getDimension(); i++) {
 				if (boardButtons[i].equals(e.getSource())) {
 					try {
 						game.takeTurn(i);
@@ -98,15 +98,15 @@ public class RolitView extends Container implements Observer {
 	public RolitController controller;
 
 	private void init(Game g) {
-		boardButtons = new JButton[g.getBoard().dim * g.getBoard().dim];
+		boardButtons = new JButton[g.getBoard().getDimension() * g.getBoard().getDimension()];
 		label = new JLabel("Its RED's turn");
 		button = new JButton(g instanceof ServerGame ? "Close"
 				: "Another game?");
 		Container board = new Container();
-		GridLayout boardLayout = new GridLayout(g.getBoard().dim,
-				g.getBoard().dim);
+		GridLayout boardLayout = new GridLayout(g.getBoard().getDimension(),
+				g.getBoard().getDimension());
 		board.setLayout(boardLayout);
-		for (int i = 0; i < g.getBoard().dim * g.getBoard().dim; i++) {
+		for (int i = 0; i < g.getBoard().getDimension() * g.getBoard().getDimension(); i++) {
 			boardButtons[i] = new JButton();
 			boardButtons[i].setPreferredSize(new Dimension(DIM, DIM));
 			board.add(boardButtons[i]);
@@ -138,7 +138,7 @@ public class RolitView extends Container implements Observer {
 
 	public void update(Observable o, Object arg) {
 		Game game = (Game) o;
-		for (int i = 0; i < game.getBoard().dim * game.getBoard().dim; i++) {
+		for (int i = 0; i < game.getBoard().getDimension() * game.getBoard().getDimension(); i++) {
 			JButton boardButton = boardButtons[i];
 			boardButton.setEnabled(game.getCurrent().equals(usersMark)
 					&& game.isValidMove(i) && !game.getBoard().gameOver());

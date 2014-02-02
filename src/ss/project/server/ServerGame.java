@@ -1,15 +1,16 @@
 package ss.project.server;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import ss.project.ai.NaiveAi;
 import ss.project.ai.SmartAi;
-import ss.project.engine.Game;
-import ss.project.engine.Mark;
-import ss.project.engine.Player;
 import ss.project.exceptions.IllegalMoveException;
+import ss.project.model.Game;
+import ss.project.model.Mark;
+import ss.project.model.Player;
 
 public class ServerGame extends Game {
 	public ServerGame(ArrayList<ServerPeer> ps) {
@@ -49,7 +50,7 @@ public class ServerGame extends Game {
 				try {
 					takeTurn(new NaiveAi().determineMove(this));
 				} catch (IllegalMoveException e1) {
-					//should not be catched. NaiveAi only takes legal moves.
+					//should not be caught. NaiveAi only takes legal moves.
 				}
 			}
 		}
@@ -64,6 +65,8 @@ public class ServerGame extends Game {
 			peer.sendStart();
 		}
 	}
-
+	/*@ pure */ public Collection<ServerPeer> getPeers() {
+		return peers.values();
+	}
 	private Map<Player, ServerPeer> peers = new HashMap<Player, ServerPeer>();
 }
