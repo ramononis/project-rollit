@@ -53,6 +53,9 @@ public class Server extends Observable implements Runnable, ProtocolConstants {
 	public Server() {
 	}
 
+	public int getPort() {
+		return serverSocket.getLocalPort();
+	}
 	public void setPort(int p) {
 		try {
 			serverSocket = new ServerSocket(p);
@@ -71,7 +74,15 @@ public class Server extends Observable implements Runnable, ProtocolConstants {
 			checkForNewGames();
 		}
 	}
-
+	public boolean nameFree(String s) {
+		boolean foundMatch = false;
+		for(ServerPeer peer : idlePeerList) {
+			if(peer.getName().equals(s)) {
+				foundMatch = true;
+			}
+		}
+		return !foundMatch;
+	}
 	public void checkForNewGames() {
 
 		int readyPeerAmount = 0;
@@ -108,8 +119,8 @@ public class Server extends Observable implements Runnable, ProtocolConstants {
 		ServerGame game = new ServerGame(peers);
 		gameList.add(game);
 		setChanged();
-
 		notifyObservers(game);
+		game.start();
 	}
 
 	@Override

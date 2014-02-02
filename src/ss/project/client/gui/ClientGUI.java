@@ -49,6 +49,9 @@ public class ClientGUI extends JFrame implements Observer {
 			String inputString = JOptionPane.showInputDialog(this,
 					"Enter the server's IP address", "Enter IP address",
 					JOptionPane.QUESTION_MESSAGE);
+			if(inputString == null) {
+				System.exit(0);
+			}
 			try {
 				address = InetAddress.getByName(inputString);
 			} catch (UnknownHostException e) {
@@ -64,8 +67,11 @@ public class ClientGUI extends JFrame implements Observer {
 		int port = -1;
 		while (port == -1) {
 			String inputString = JOptionPane.showInputDialog(this,
-					"Enter a port number between 1100 and 65535: ",
+					"Enter the server's port number: ",
 					"Port number", JOptionPane.QUESTION_MESSAGE);
+			if(inputString == null) {
+				System.exit(0);
+			}
 			try {
 				port = Integer.parseInt(inputString);
 			} catch (NumberFormatException e) {
@@ -90,7 +96,6 @@ public class ClientGUI extends JFrame implements Observer {
 				game.addObserver(scorePanel);
 				gameView.add(scorePanel);
 				getContentPane().add(gameView, BorderLayout.CENTER);
-				game.start();
 			}
 		}
 	}
@@ -109,6 +114,9 @@ public class ClientGUI extends JFrame implements Observer {
 		while (name.equals("")) {
 			name = JOptionPane.showInputDialog(this, "Enter a name: ", "Name",
 					JOptionPane.QUESTION_MESSAGE);
+			if(name == null) {
+				System.exit(0);
+			}
 		}
 		return name;
 	}

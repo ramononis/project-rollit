@@ -9,7 +9,7 @@ import ss.project.engine.Mark;
 import ss.project.exceptions.IllegalMoveException;
 
 public class DumbAi implements Ai {
-	private String name = "Dumb ai";
+	private String name = "Dumb";
 
 	@Override
 	public int determineMove(Game game) {

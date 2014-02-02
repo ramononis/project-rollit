@@ -158,7 +158,11 @@ public class ServerPeer implements Runnable, ProtocolConstants {
 				String line = in.readLine();
 				ServerGUI.log("[" + name + "] " + line);
 				if (line.contains(LOGIN_GAME)) {
-					name = line.replaceAll(LOGIN_GAME, "");
+					String peerName = line.replaceAll(LOGIN_GAME, "");
+					if(!server.nameFree(peerName)) {
+						kick("name already in use");
+					}
+					name = peerName;
 					sendWelcome();
 				} else if (line.contains(JOIN_GAME)) {
 					minimumPlayers = Integer.parseInt(line.replaceAll(

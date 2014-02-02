@@ -25,6 +25,7 @@ public class ServerGUI extends JFrame implements Observer {
 	private static final long serialVersionUID = -4411033752001988794L;
 	private JTabbedPane tabbedPane;
 	private static Logger log;
+	private static boolean enableGUI;
 	private JScrollPane textScroll;
 
 	public ServerGUI(Server s) {
@@ -36,14 +37,14 @@ public class ServerGUI extends JFrame implements Observer {
 		log("STARTUP SUCCESFULL");
 	}
 
-	public int askForPortNumber() {
+	public static int askForPortNumber() {
 		int port = -1;
 		while (port == -1) {
-			String inputString = JOptionPane.showInputDialog(this,
+			String inputString = JOptionPane.showInputDialog(null,
 					"Enter a port number between 1100 and 65535: ",
 					"Port number", JOptionPane.QUESTION_MESSAGE);
-			if(inputString == null) {
-				//cancel button
+			if (inputString == null) {
+				// cancel button
 				System.exit(0);
 			}
 			try {
@@ -51,13 +52,13 @@ public class ServerGUI extends JFrame implements Observer {
 				if (Server.portAvailable(inputInt)) {
 					port = inputInt;
 				} else {
-					JOptionPane.showMessageDialog(this,
+					JOptionPane.showMessageDialog(null,
 							"This port is invalid or not available.\n"
 									+ "Please enter an other port number.",
 							"Port invalid", JOptionPane.ERROR_MESSAGE);
 				}
 			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(this,
+				JOptionPane.showMessageDialog(null,
 						"Please enter a valid number", "Number Invalid",
 						JOptionPane.ERROR_MESSAGE);
 			}
@@ -66,11 +67,19 @@ public class ServerGUI extends JFrame implements Observer {
 	}
 
 	public static void log(String message) {
-		ServerGUI.log.info(message);
+		if (enableGUI) {
+			ServerGUI.log.info(message);
+		} else {
+			System.out.println(message);
+		}
 	}
 
 	public static void logError(String message) {
-		ServerGUI.log.log(Level.WARNING, "ERROR: " + message);
+		if (enableGUI) {
+			ServerGUI.log.log(Level.WARNING, "ERROR: " + message);
+		} else {
+			System.err.println(message);
+		}
 	}
 
 	private void initializeGUI() {
@@ -110,8 +119,22 @@ public class ServerGUI extends JFrame implements Observer {
 				game.addObserver(scorePanel);
 				gameView.add(scorePanel);
 				tabbedPane.add(game.getName(), gameView);
-				game.start();
 			}
 		}
+	}
+
+	/**
+	 * @return the enableGUI
+	 */
+	public static boolean isGUIEnabled() {
+		return enableGUI;
+	}
+
+	/**
+	 * @param enableGUI
+	 *            the enableGUI to set
+	 */
+	public static void setGUIEnabled(boolean enableGUI) {
+		ServerGUI.enableGUI = enableGUI;
 	}
 }

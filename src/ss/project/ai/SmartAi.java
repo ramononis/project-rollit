@@ -4,7 +4,7 @@ import ss.project.engine.Game;
 import ss.project.exceptions.IllegalMoveException;
 
 public class SmartAi implements Ai {
-	private String name = "Smart ai";
+	private String name = "Smart";
 
 	public void log(String s) {
 		System.out.println(s);

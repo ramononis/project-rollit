@@ -32,7 +32,7 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 	private Mark myMark;
 	private Player myPlayer;
 	private String name;
-	private int nrPlayers;
+	private int minimalPlayers;
 	private boolean welcomeRecieved;
 
 	public static Client createClient(ClientGUI gui) {
@@ -46,6 +46,9 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 				"Player type", JOptionPane.OK_OPTION,
 				JOptionPane.QUESTION_MESSAGE, null, new String[] { "Dumb",
 						"Naive", "Suicide", "Smart", "Human" }, 2);
+		if(ai == JOptionPane.CLOSED_OPTION) {
+			System.exit(0);
+		}
 		name = gui.askForName();
 		switch (ai) {
 		case 0:
@@ -70,7 +73,7 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 				address = gui.askForIP();
 				port = gui.askForPortNumber();
 				nrPlayers = gui.askForPlayers();
-				client = new Client(address, port, player, name, nrPlayers);
+				client = new Client(address, port, player, nrPlayers);
 				client.sendLogin();
 				System.out.println("CLIENTAPP");
 			} catch (IOException e) {
@@ -91,10 +94,10 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 		myMark = mark;
 	}
 
-	public Client(InetAddress addr, int port, Player player, String n, int nr)
+	public Client(InetAddress addr, int port, Player player, int nr)
 			throws IOException {
-		nrPlayers = nr;
-		name = n;
+		minimalPlayers = nr;
+		name  = player.getName();
 		socket = new Socket(addr, port);
 		in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 		out = new BufferedWriter(new OutputStreamWriter(
@@ -132,6 +135,7 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 					game.setMyPlayer(myPlayer);
 					setChanged();
 					notifyObservers(game);
+					game.start();
 
 				} else if (line.contains(WELCOME)) {
 					welcomeRecieved = true;
@@ -141,6 +145,7 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 							"You have been kicked from the server, Reason: " + line.replaceAll(KICK, "") + ".\n"
 									+ "The client will shut down.",
 							"Server disconnected", JOptionPane.ERROR_MESSAGE);
+					shutDown();
 				} else if (line.contains(UPDATE_GUI)) {
 					String line2 = line.replaceAll(UPDATE_GUI, "");
 					String[] line2nstuff = line2.split(" ");
@@ -193,8 +198,8 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 
 	public void sendJoin() {
 		try {
-			out.write(JOIN_GAME + nrPlayers + "\n");
-			System.out.println(JOIN_GAME + nrPlayers + "\n");
+			out.write(JOIN_GAME + minimalPlayers + "\n");
+			System.out.println(JOIN_GAME + minimalPlayers + "\n");
 			out.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -230,6 +235,20 @@ public class Client extends Observable implements Runnable, ProtocolConstants {
 		return name;
 	}
 	
+	/**
+	 * @return the minimalPlayers
+	 */
+	public int getMinimalPlayers() {
+		return minimalPlayers;
+	}
+
+	/**
+	 * @param minimalPlayers the minimalPlayers to set
+	 */
+	public void setMinimalPlayers(int minimalPlayers) {
+		this.minimalPlayers = minimalPlayers;
+	}
+
 	class ConnectionChecker implements Runnable {
 
 		public void run() {

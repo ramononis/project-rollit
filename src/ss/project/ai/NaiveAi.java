@@ -7,7 +7,7 @@ import ss.project.engine.Board;
 import ss.project.engine.Game;
 
 public class NaiveAi implements Ai {
-	private String name = "Naive ai";
+	private String name = "Naive";
 
 	@Override
 	public int determineMove(Game game) {
