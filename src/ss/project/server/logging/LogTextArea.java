@@ -121,8 +121,6 @@ public class LogTextArea extends JList {
 		logging.setProperty("handlers",
 				TextAreaLogHandler.class.getCanonicalName() + "," + filehandler);
 		logging.setProperty(".level", "INFO");
-		logging.setProperty(ConsoleLogger.class.getCanonicalName()
-				+ ".formatter", logformatter);
 		logging.setProperty(filehandler + ".formatter", logformatter);
 		logging.setProperty(TextAreaLogHandler.class.getCanonicalName()
 				+ ".formatter", logformatter);

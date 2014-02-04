@@ -196,7 +196,7 @@ public class ServerPeer implements Runnable, ProtocolConstants {
 	//@ ensures g == null ==> getGame() == \old(getGame());
 	//@ ensures g != null ==> getGame() == g;
 	public void setGame(ServerGame g) {
-		if(game != null) {
+		if(g != null) {
 			game = g;
 		}
 	}
